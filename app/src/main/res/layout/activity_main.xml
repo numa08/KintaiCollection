@@ -6,7 +6,7 @@
     <fragment
         android:id="@+id/kintaiReportFragment"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/kintai_report_height"
         android:name="net.numa08.kintaicollection.app.KintaiReportFragment"
         android:layout_alignParentTop="true"
         />
