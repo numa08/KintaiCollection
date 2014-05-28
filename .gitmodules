@@ -1,0 +1,3 @@
+[submodule "AndroidBootstrap"]
+	path = AndroidBootstrap
+	url = git@github.com:Bearded-Hen/Android-Bootstrap.git
