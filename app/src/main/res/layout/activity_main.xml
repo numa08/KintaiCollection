@@ -3,4 +3,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="net.numa08.kintaicollection.app.MainActivity">
+    <fragment
+        android:id="@+id/kintaiReportFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:name="net.numa08.kintaicollection.app.KintaiReportFragment"/>
 </RelativeLayout>
