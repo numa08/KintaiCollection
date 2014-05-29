@@ -27,7 +27,7 @@ public class KintaiReportTask extends AsyncTask<Void, Integer, Boolean>{
     }
 
     public void registListener(KintaiReportTaskListener listener) {
-        this.listener = Option.some(new WeakReference<>(listener));
+        this.listener = Option.fromNull(new WeakReference<>(listener));
     }
 
     public void unRegitListener() {
