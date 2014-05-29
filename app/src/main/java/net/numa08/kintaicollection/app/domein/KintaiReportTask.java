@@ -42,7 +42,6 @@ public class KintaiReportTask extends AsyncTask<Void, Integer, Boolean>{
         });
     }
 
-
     @Override
     protected void onProgressUpdate(final Integer... values) {
         listener.foreach(new Effect<WeakReference<KintaiReportTaskListener>>() {
@@ -58,12 +57,12 @@ public class KintaiReportTask extends AsyncTask<Void, Integer, Boolean>{
 
     @Override
     protected Boolean doInBackground(Void... params) {
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        return true;
+        return request.request(new Effect<Integer>() {
+            @Override
+            public void e(Integer progress) {
+                publishProgress(progress);
+            }
+        });
     }
 
     @Override
