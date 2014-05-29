@@ -1,4 +1,4 @@
-package net.numa08.kintaicollection.app.models;
+package net.numa08.kintaicollection.app.models.requests;
 
 import fj.Effect;
 

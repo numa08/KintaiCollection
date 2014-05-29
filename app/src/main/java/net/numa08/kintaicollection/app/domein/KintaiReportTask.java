@@ -2,7 +2,7 @@ package net.numa08.kintaicollection.app.domein;
 
 import android.os.AsyncTask;
 
-import net.numa08.kintaicollection.app.models.KintaiReportRequest;
+import net.numa08.kintaicollection.app.models.requests.KintaiReportRequest;
 
 import java.lang.ref.WeakReference;
 

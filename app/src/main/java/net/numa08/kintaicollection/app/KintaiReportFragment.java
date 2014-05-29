@@ -9,9 +9,9 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import net.numa08.kintaicollection.app.domein.KintaiReportTask;
-import net.numa08.kintaicollection.app.models.KintaiReportRequest;
-import net.numa08.kintaicollection.app.models.SyussyaReportRequest;
-import net.numa08.kintaicollection.app.models.TaisyaReportRequest;
+import net.numa08.kintaicollection.app.models.requests.KintaiReportRequest;
+import net.numa08.kintaicollection.app.models.requests.SyussyaReportRequest;
+import net.numa08.kintaicollection.app.models.requests.TaisyaReportRequest;
 
 import fj.Effect;
 import fj.data.Option;
