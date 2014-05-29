@@ -39,7 +39,7 @@ public class KintaiListFragmentFragment extends ListFragment implements AbsListV
 
         // TODO: Change Adapter to display your content
         mAdapter = new ArrayAdapter<DummyContent.DummyItem>(getActivity(),
-                android.R.layout.simple_list_item_1, android.R.id.text1, DummyContent.ITEMS);
+               R.layout.row_kintai_timeline, R.id.workerName, DummyContent.ITEMS);
     }
 
     @Override

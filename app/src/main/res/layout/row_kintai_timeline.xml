@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:android-bootstrap="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="@dimen/kintai_tl_row_height"
+    android:minHeight="@dimen/kintai_tl_row_height"
+    >
+    <com.beardedhen.androidbootstrap.BootstrapThumbnail
+        android:id="@+id/workerIcon"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="@dimen/padding_small"
+        android-bootstrap:bt_image="@drawable/ic_launcher"
+        android-bootstrap:bt_roundedCorners="true"
+        android-bootstrap:bt_width="48dp"
+        android-bootstrap:bt_height="48dp"
+        />
+    <TextView
+        android:id="@+id/workerName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/workerIcon"
+        android:layout_toRightOf="@id/workerIcon"
+        android:layout_marginLeft="@dimen/padding_small"
+        android:textAppearance="@android:style/TextAppearance.DeviceDefault.Small"
+        />
+    <TextView
+        android:id="@+id/kintaiLog"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/workerIcon"
+        android:layout_toRightOf="@id/workerIcon"
+        android:layout_marginLeft="@dimen/padding_small"
+        android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+        />
+</RelativeLayout>
