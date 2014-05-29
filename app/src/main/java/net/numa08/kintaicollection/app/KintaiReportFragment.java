@@ -1,19 +1,24 @@
 package net.numa08.kintaicollection.app;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import net.numa08.kintaicollection.app.domein.KintaiReportTask;
 import net.numa08.kintaicollection.app.models.KintaiReportRequest;
 import net.numa08.kintaicollection.app.models.SyussyaReportRequest;
 import net.numa08.kintaicollection.app.models.TaisyaReportRequest;
 
+import fj.Effect;
+import fj.data.Option;
+
 public class KintaiReportFragment extends Fragment implements KintaiReportTask.KintaiReportTaskListener {
 
-    private KintaiReportTask reportTask;
+    private Option<KintaiReportTask> reportTask;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -33,9 +38,14 @@ public class KintaiReportFragment extends Fragment implements KintaiReportTask.K
         @Override
         public void onClick(View v) {
             final KintaiReportRequest request = new SyussyaReportRequest();
-            reportTask = new KintaiReportTask(request);
-            reportTask.registListener(KintaiReportFragment.this);
-            reportTask.execute();
+            reportTask = Option.some(new KintaiReportTask(request));
+            reportTask.foreach(new Effect<KintaiReportTask>() {
+                @Override
+                public void e(KintaiReportTask task) {
+                    task.registListener(KintaiReportFragment.this);
+                    task.execute();
+                }
+            });
         }
     };
 
@@ -43,22 +53,37 @@ public class KintaiReportFragment extends Fragment implements KintaiReportTask.K
         @Override
         public void onClick(View v) {
             final KintaiReportRequest request = new TaisyaReportRequest();
-            reportTask = new KintaiReportTask(request);
-            reportTask.registListener(KintaiReportFragment.this);
-            reportTask.execute();
+            reportTask = Option.some(new KintaiReportTask(request));
+            reportTask.foreach(new Effect<KintaiReportTask>() {
+                @Override
+                public void e(KintaiReportTask task) {
+                    task.registListener(KintaiReportFragment.this);
+                    task.execute();
+                }
+            });
         }
     };
 
     @Override
     public void onPause() {
-        if (reportTask != null) {
-            reportTask.unRegitListener();
-        }
+        super.onPause();
+        reportTask.foreach(new Effect<KintaiReportTask>() {
+            @Override
+            public void e(KintaiReportTask task) {
+                task.unRegitListener();
+            }
+        });
     }
 
     @Override
     public void onSuccess() {
-        reportTask.unRegitListener();
+        Option<Activity> activitiy = Option.some(getActivity());
+        activitiy.foreach(new Effect<Activity>() {
+            @Override
+            public void e(Activity activity) {
+                Toast.makeText(activity, "callback called", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     @Override
@@ -68,10 +93,16 @@ public class KintaiReportFragment extends Fragment implements KintaiReportTask.K
 
     @Override
     public void onFailed(Throwable e) {
-        reportTask.unRegitListener();
     }
 
     @Override
-    public void onFinish() {}
+    public void onFinish() {
+        reportTask.foreach(new Effect<KintaiReportTask>() {
+            @Override
+            public void e(KintaiReportTask task) {
+                task.unRegitListener();
+            }
+        });
+    }
 
 }

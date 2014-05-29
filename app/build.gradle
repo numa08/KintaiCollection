@@ -26,5 +26,6 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:19.+'
-        compile project(':AndroidBootstrap:AndroidBootstrap')
+    compile project(':AndroidBootstrap:AndroidBootstrap')
+    compile 'org.functionaljava:functionaljava:3.1'
 }

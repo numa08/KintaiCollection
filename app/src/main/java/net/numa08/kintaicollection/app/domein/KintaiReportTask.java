@@ -6,6 +6,9 @@ import net.numa08.kintaicollection.app.models.KintaiReportRequest;
 
 import java.lang.ref.WeakReference;
 
+import fj.Effect;
+import fj.data.Option;
+
 public class KintaiReportTask extends AsyncTask<Void, Integer, Boolean>{
 
     public interface KintaiReportTaskListener {
@@ -16,44 +19,69 @@ public class KintaiReportTask extends AsyncTask<Void, Integer, Boolean>{
     }
 
     private final KintaiReportRequest request;
-    private WeakReference<KintaiReportTaskListener> listener;
+    private Throwable exception;
+    private Option<WeakReference<KintaiReportTaskListener>> listener;
 
     public KintaiReportTask(KintaiReportRequest request) {
         this.request = request;
     }
 
     public void registListener(KintaiReportTaskListener listener) {
-        this.listener = new WeakReference<>(listener);
+        this.listener = Option.some(new WeakReference<>(listener));
     }
 
     public void unRegitListener() {
-        if (listener == null) {
-            return;
-        }
-        if (listener.get() == null) {
-            return;
-        }
-        listener.clear();
+        listener.foreach(new Effect<WeakReference<KintaiReportTaskListener>>() {
+            @Override
+            public void e(WeakReference<KintaiReportTaskListener> listen) {
+                if (listen.get() == null) {
+                    return;
+                }
+                listen.clear();
+            }
+        });
     }
 
 
     @Override
-    protected void onProgressUpdate(Integer... values) {
-        super.onProgressUpdate(values);
+    protected void onProgressUpdate(final Integer... values) {
+        listener.foreach(new Effect<WeakReference<KintaiReportTaskListener>>() {
+            @Override
+            public void e(WeakReference<KintaiReportTaskListener> listen) {
+                if (listen.get() == null) {
+                    return;
+                }
+                listen.get().onProgress(values[0]);
+            }
+        });
     }
 
     @Override
     protected Boolean doInBackground(Void... params) {
-        return null;
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return true;
     }
 
     @Override
-    protected void onCancelled(Boolean aBoolean) {
-        super.onCancelled(aBoolean);
-    }
-
-    @Override
-    protected void onPostExecute(Boolean aBoolean) {
-        super.onPostExecute(aBoolean);
+    protected void onPostExecute(final Boolean result) {
+        super.onPostExecute(result);
+        listener.foreach(new Effect<WeakReference<KintaiReportTaskListener>>() {
+            @Override
+            public void e(WeakReference<KintaiReportTaskListener> listen) {
+                if (listen.get() == null) {
+                    return;
+                }
+                if (result) {
+                    listen.get().onSuccess();
+                } else {
+                    listen.get().onFailed(exception);
+                }
+                listen.get().onFinish();
+            }
+        });
     }
 }
