@@ -1,6 +1,9 @@
 package net.numa08.kintaicollection.app;
 
+import android.app.Activity;
 import android.app.ListFragment;
+import android.app.LoaderManager;
+import android.content.Loader;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,33 +14,24 @@ import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
+import net.numa08.kintaicollection.app.domein.KintaiTimelineLoader;
 import net.numa08.kintaicollection.app.dummy.DummyContent;
 
-public class KintaiListFragmentFragment extends ListFragment implements AbsListView.OnItemClickListener {
+import java.util.List;
 
-    /**
-     * The fragment's ListView/GridView.
-     */
+import fj.F;
+import fj.data.Option;
+
+public class KintaiListFragmentFragment extends ListFragment implements AbsListView.OnItemClickListener ,LoaderManager.LoaderCallbacks<List<DummyContent.DummyItem>>{
+
     private AbsListView mListView;
 
-    /**
-     * The Adapter which will be used to populate the ListView/GridView with
-     * Views.
-     */
     private ListAdapter mAdapter;
-
-    /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
-     */
-    public KintaiListFragmentFragment() {
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // TODO: Change Adapter to display your content
         mAdapter = new ArrayAdapter<DummyContent.DummyItem>(getActivity(),
                R.layout.row_kintai_timeline, R.id.workerName, DummyContent.ITEMS);
     }
@@ -61,11 +55,6 @@ public class KintaiListFragmentFragment extends ListFragment implements AbsListV
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {}
 
-    /**
-     * The default content for this Fragment has a TextView that is shown when
-     * the list is empty. If you would like to change the text, call this method
-     * to supply the text it should use.
-     */
     public void setEmptyText(CharSequence emptyText) {
         View emptyView = mListView.getEmptyView();
 
@@ -74,4 +63,28 @@ public class KintaiListFragmentFragment extends ListFragment implements AbsListV
         }
     }
 
+    @Override
+    public Loader<List<DummyContent.DummyItem>> onCreateLoader(int id, Bundle args) {
+        final Option<Loader<List<DummyContent.DummyItem>>> loader = Option.fromNull(getActivity()).map(new F<Activity, Loader<List<DummyContent.DummyItem>>>() {
+            @Override
+            public Loader<List<DummyContent.DummyItem>> f(Activity activity) {
+                return new KintaiTimelineLoader(activity);
+            }
+        });
+        if (loader.isSome()) {
+            return loader.some();
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public void onLoadFinished(Loader<List<DummyContent.DummyItem>> loader, List<DummyContent.DummyItem> data) {
+
+    }
+
+    @Override
+    public void onLoaderReset(Loader<List<DummyContent.DummyItem>> loader) {
+
+    }
 }
