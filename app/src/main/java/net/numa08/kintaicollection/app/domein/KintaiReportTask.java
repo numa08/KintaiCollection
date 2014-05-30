@@ -20,7 +20,7 @@ public class KintaiReportTask extends AsyncTask<Void, Integer, Boolean>{
 
     private final KintaiReportRequest request;
     private Throwable exception;
-    private Option<WeakReference<KintaiReportTaskListener>> listener;
+    private Option<WeakReference<KintaiReportTaskListener>> listener = Option.none();
 
     public KintaiReportTask(KintaiReportRequest request) {
         this.request = request;

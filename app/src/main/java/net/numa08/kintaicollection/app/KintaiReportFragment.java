@@ -18,7 +18,7 @@ import fj.data.Option;
 
 public class KintaiReportFragment extends Fragment implements KintaiReportTask.KintaiReportTaskListener {
 
-    private Option<KintaiReportTask> reportTask;
+    private Option<KintaiReportTask> reportTask = Option.none();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -38,7 +38,7 @@ public class KintaiReportFragment extends Fragment implements KintaiReportTask.K
         @Override
         public void onClick(View v) {
             final KintaiReportRequest request = new SyussyaReportRequest();
-            reportTask = Option.some(new KintaiReportTask(request));
+            reportTask = Option.fromNull(new KintaiReportTask(request));
             reportTask.foreach(new Effect<KintaiReportTask>() {
                 @Override
                 public void e(KintaiReportTask task) {
@@ -53,7 +53,7 @@ public class KintaiReportFragment extends Fragment implements KintaiReportTask.K
         @Override
         public void onClick(View v) {
             final KintaiReportRequest request = new TaisyaReportRequest();
-            reportTask = Option.some(new KintaiReportTask(request));
+            reportTask = Option.fromNull(new KintaiReportTask(request));
             reportTask.foreach(new Effect<KintaiReportTask>() {
                 @Override
                 public void e(KintaiReportTask task) {
