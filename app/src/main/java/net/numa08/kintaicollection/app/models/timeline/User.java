@@ -1,19 +1,14 @@
 package net.numa08.kintaicollection.app.models.timeline;
 
 public class User {
-    final String userId;
-    final String userName;
 
-    public User(String userId, String userName) {
-        this.userId = userId;
-        this.userName = userName;
-    }
+    public final String name;
+    public final String id;
+    public final String icon;
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "userId='" + userId + '\'' +
-                ", userName='" + userName + '\'' +
-                '}';
+    public User(String name, String id, String icon) {
+        this.name = name;
+        this.id = id;
+        this.icon = icon;
     }
 }

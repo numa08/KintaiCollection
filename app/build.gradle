@@ -28,4 +28,5 @@ dependencies {
     compile 'com.android.support:appcompat-v7:19.+'
     compile project(':AndroidBootstrap:AndroidBootstrap')
     compile 'org.functionaljava:functionaljava:3.1'
+    compile 'com.mcxiaoke.volley:library:1.0.+'
 }
