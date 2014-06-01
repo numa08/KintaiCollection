@@ -5,17 +5,13 @@
     android:layout_width="match_parent" android:layout_height="@dimen/kintai_tl_row_height"
     android:minHeight="@dimen/kintai_tl_row_height"
     >
-    <com.beardedhen.androidbootstrap.BootstrapThumbnail
+    <ImageView
         android:id="@+id/workerIcon"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
         android:layout_marginLeft="@dimen/padding_small"
-        android-bootstrap:bt_image="@drawable/ic_launcher"
-        android-bootstrap:bt_roundedCorners="true"
-        android-bootstrap:bt_width="48dp"
-        android-bootstrap:bt_height="48dp"
         />
     <TextView
         android:id="@+id/workerName"

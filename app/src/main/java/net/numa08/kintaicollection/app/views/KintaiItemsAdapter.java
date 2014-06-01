@@ -3,18 +3,49 @@ package net.numa08.kintaicollection.app.views;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.LruCache;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
 
+import net.numa08.kintaicollection.app.R;
 import net.numa08.kintaicollection.app.models.timeline.KintaiTimelineItem;
 
 public class KintaiItemsAdapter extends ArrayAdapter<KintaiTimelineItem>{
 
-    public KintaiItemsAdapter(Context context) {
+    private final ImageLoader loader;
+
+    public KintaiItemsAdapter(Context context, RequestQueue queue) {
         super(context, 0);
+        loader = new ImageLoader(queue, new ImageCache());
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        final ViewHolder holder;
+        if (convertView == null) {
+            convertView = View.inflate(getContext(), R.layout.row_kintai_timeline, null);
+            holder = new ViewHolder();
+            holder.icon = (ImageView)convertView.findViewById(R.id.workerIcon);
+            holder.name = (TextView)convertView.findViewById(R.id.workerName);
+            holder.kintai = (TextView)convertView.findViewById(R.id.kintaiLog);
+            convertView.setTag(holder);
+        } else {
+            holder = (ViewHolder) convertView.getTag();
+        }
+
+        final KintaiTimelineItem item = getItem(position);
+        holder.name.setText(item.getUser().name);
+        holder.kintai.setText(item.getKintai().toLogMessage(getContext()));
+
+        final ImageLoader.ImageListener listener = ImageLoader.getImageListener(holder.icon, android.R.drawable.spinner_background, android.R.drawable.ic_dialog_alert);
+        loader.get(item.getUser().icon, listener);
+
+        return super.getView(position, convertView, parent);
     }
 
     private static class ViewHolder {
