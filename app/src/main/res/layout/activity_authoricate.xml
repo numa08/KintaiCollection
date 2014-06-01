@@ -31,7 +31,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="Singin in with Twitter"
+            android:text="@string/signinWithTwitter"
             android-bootstrap:bb_icon_left="fa-twitter"
             android-bootstrap:bb_type="primary"
             />

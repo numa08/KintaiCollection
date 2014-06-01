@@ -8,5 +8,6 @@
     <string name="syussya">ｼｭｯｼｬ</string>
     <string name="taisya">ﾀｲｼｬ</string>
     <string name="title_activity_authoricate">AuthoricateActivity</string>
+    <string name="signinWithTwitter">Singin in with Twitter</string>
 
 </resources>
