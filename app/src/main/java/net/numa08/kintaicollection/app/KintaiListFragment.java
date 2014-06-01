@@ -3,6 +3,10 @@ package net.numa08.kintaicollection.app;
 import android.app.Activity;
 import android.app.ListFragment;
 import android.app.LoaderManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.Loader;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,6 +17,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
@@ -56,9 +61,22 @@ public class KintaiListFragment extends ListFragment implements AbsListView.OnIt
             }
         });
 
-        getLoaderManager().initLoader(0, null, this);
+        getLoaderManager().restartLoader(0, null, this);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        Option.fromNull(getActivity())
+              .foreach(new Effect<Activity>() {
+                  @Override
+                  public void e(Activity activity) {
+                      final IntentFilter filter = new IntentFilter();
+                      filter.addAction(MainActivity.Action.UPDATE_KINTAI_TIMELINE);
+                      activity.registerReceiver(receiveTimelineUpdate,filter);
+                  }
+              });
+    }
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {}
 
@@ -76,6 +94,18 @@ public class KintaiListFragment extends ListFragment implements AbsListView.OnIt
         } else {
             return null;
         }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Option.fromNull(getActivity())
+              .foreach(new Effect<Activity>() {
+                  @Override
+                  public void e(Activity activity) {
+                      activity.unregisterReceiver(receiveTimelineUpdate);
+                  }
+              });
     }
 
     @Override
@@ -101,4 +131,11 @@ public class KintaiListFragment extends ListFragment implements AbsListView.OnIt
 
     @Override
     public void onLoaderReset(Loader<List<KintaiTimelineItem>> loader) {}
+
+    private final BroadcastReceiver receiveTimelineUpdate = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            KintaiListFragment.this.getLoaderManager().restartLoader(0, null, KintaiListFragment.this);
+        }
+    };
 }

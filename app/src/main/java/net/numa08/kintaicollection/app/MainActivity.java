@@ -8,6 +8,10 @@ import android.view.MenuItem;
 
 public class MainActivity extends Activity {
 
+    public static class Action {
+        public static final String UPDATE_KINTAI_TIMELINE = MainActivity.class.getName() + ".UPDATE_KINTAIME_TIMELINE";
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

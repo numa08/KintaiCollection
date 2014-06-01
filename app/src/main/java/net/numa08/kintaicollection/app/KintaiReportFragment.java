@@ -2,6 +2,7 @@ package net.numa08.kintaicollection.app;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -77,11 +78,12 @@ public class KintaiReportFragment extends Fragment implements KintaiReportTask.K
 
     @Override
     public void onSuccess() {
-        Option<Activity> activitiy = Option.some(getActivity());
-        activitiy.foreach(new Effect<Activity>() {
+        Option.fromNull(getActivity()).foreach(new Effect<Activity>() {
             @Override
             public void e(Activity activity) {
-                Toast.makeText(activity, "callback called", Toast.LENGTH_LONG).show();
+                final Intent intent = new Intent();
+                intent.setAction(MainActivity.Action.UPDATE_KINTAI_TIMELINE);
+                activity.sendBroadcast(intent);
             }
         });
     }
