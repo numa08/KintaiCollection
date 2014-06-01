@@ -8,7 +8,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:orientation="vertical"
-    tools:context="net.numa08.kintaicollection.app.AuthoricateActivity">
+    tools:context="net.numa08.kintaicollection.app.AuthenticateActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -34,6 +34,7 @@
             android:text="@string/signinWithTwitter"
             android-bootstrap:bb_icon_left="fa-twitter"
             android-bootstrap:bb_type="primary"
+            android:onClick="signIn"
             />
         </RelativeLayout>
 </LinearLayout>
