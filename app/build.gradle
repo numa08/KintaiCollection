@@ -29,4 +29,5 @@ dependencies {
     compile project(':AndroidBootstrap:AndroidBootstrap')
     compile 'org.functionaljava:functionaljava:3.1'
     compile 'com.mcxiaoke.volley:library:1.0.+'
+    compile 'com.microsoft.windowsazure:microsoft-azure-api-bom:0.5.0'
 }
