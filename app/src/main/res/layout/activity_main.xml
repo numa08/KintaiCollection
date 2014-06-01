@@ -14,7 +14,7 @@
         android:id="@+id/kintaiListFragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:name="net.numa08.kintaicollection.app.KintaiListFragmentFragment"
+        android:name="net.numa08.kintaicollection.app.KintaiListFragment"
         android:layout_below="@id/kintaiReportFragment"
         android:layout_alignParentBottom="true"/>
 </RelativeLayout>

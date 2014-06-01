@@ -45,7 +45,7 @@ public class KintaiItemsAdapter extends ArrayAdapter<KintaiTimelineItem>{
         final ImageLoader.ImageListener listener = ImageLoader.getImageListener(holder.icon, android.R.drawable.spinner_background, android.R.drawable.ic_dialog_alert);
         loader.get(item.getUser().icon, listener);
 
-        return super.getView(position, convertView, parent);
+        return convertView;
     }
 
     private static class ViewHolder {
