@@ -34,6 +34,7 @@ public class AuthenticateActivity extends Activity implements UserAuthentication
             e.printStackTrace();
         }
     }
+
     public void signIn(View view) {
         azureClient.foreach(new Effect<MobileServiceClient>() {
             @Override
@@ -51,4 +52,5 @@ public class AuthenticateActivity extends Activity implements UserAuthentication
             }
         });
     }
+
 }
