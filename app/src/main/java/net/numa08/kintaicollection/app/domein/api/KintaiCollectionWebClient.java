@@ -10,6 +10,8 @@ import com.android.volley.toolbox.Volley;
 
 import net.numa08.kintaicollection.app.domein.api.request.FetchUserAccountRequest;
 import net.numa08.kintaicollection.app.domein.api.request.KintaiCollectionApiRequest;
+import net.numa08.kintaicollection.app.domein.api.request.SyussyaRequest;
+import net.numa08.kintaicollection.app.domein.api.request.TaisyaRequest;
 
 import org.json.JSONObject;
 
@@ -31,6 +33,14 @@ public class KintaiCollectionWebClient {
 
     public void fetchUserAccount(FetchUserAccountRequest request, FetchUserAccountRequest.FetchUserAccountClientCallback callback) {
         invokeAPI("fetch_account", request, callback, queue);
+    }
+
+    public void syussya(SyussyaRequest request, SyussyaRequest.SyussyaRequestCallback callback) {
+        invokeAPI("syussya", request, callback, queue);
+    }
+
+    public void taisya(TaisyaRequest request, TaisyaRequest.TaisyaRequestCallback callback) {
+        invokeAPI("taisya", request, callback, queue);
     }
 
     protected void invokeAPI(String endpoint, KintaiCollectionApiRequest request, final KintaiCollectionApiCallback callback, RequestQueue queue) {
