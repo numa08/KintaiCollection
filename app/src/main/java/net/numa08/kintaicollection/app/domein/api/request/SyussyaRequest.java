@@ -5,6 +5,7 @@ import net.numa08.kintaicollection.app.domein.api.KintaiCollectionWebClient;
 import org.json.JSONObject;
 
 import java.util.Date;
+import java.util.HashMap;
 
 public class SyussyaRequest implements KintaiCollectionApiRequest {
 
@@ -19,7 +20,10 @@ public class SyussyaRequest implements KintaiCollectionApiRequest {
 
     @Override
     public JSONObject request() {
-        return null;
+        return new JSONObject(new HashMap<String, String>(){{
+            put("id", id);
+            put("time", Long.toString(date.getTime()));
+        }});
     }
 
     public static abstract class SyussyaRequestCallback implements KintaiCollectionWebClient.KintaiCollectionApiCallback{
