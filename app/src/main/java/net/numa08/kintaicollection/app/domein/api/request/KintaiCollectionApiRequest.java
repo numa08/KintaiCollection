@@ -1,4 +1,4 @@
-package net.numa08.kintaicollection.app.domein.api;
+package net.numa08.kintaicollection.app.domein.api.request;
 
 import org.json.JSONObject;
 

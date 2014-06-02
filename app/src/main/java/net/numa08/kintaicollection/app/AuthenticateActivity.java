@@ -10,13 +10,17 @@ import com.microsoft.windowsazure.mobileservices.MobileServiceUser;
 import com.microsoft.windowsazure.mobileservices.ServiceFilterResponse;
 import com.microsoft.windowsazure.mobileservices.UserAuthenticationCallback;
 
+import net.numa08.kintaicollection.app.domein.api.KintaiCollectionWebClient;
+import net.numa08.kintaicollection.app.domein.api.request.FetchUserAccountRequest;
+import net.numa08.kintaicollection.app.models.timeline.User;
+
 import java.net.MalformedURLException;
 
 import fj.Effect;
 import fj.data.Option;
 
 
-public class AuthenticateActivity extends Activity implements UserAuthenticationCallback{
+public class AuthenticateActivity extends Activity implements UserAuthenticationCallback {
 
     private Option<MobileServiceClient> azureClient = Option.none();
 
@@ -46,8 +50,23 @@ public class AuthenticateActivity extends Activity implements UserAuthentication
         Option.fromNull(mobileServiceUser).foreach(new Effect<MobileServiceUser>() {
             @Override
             public void e(MobileServiceUser mobileServiceUser) {
+                final KintaiCollectionWebClient client = new KintaiCollectionWebClient(AuthenticateActivity.this.getApplicationContext());
+                final String id = mobileServiceUser.getUserId().split(":")[1];
+                final User user = new User("", id, "", mobileServiceUser.getAuthenticationToken());
+                final FetchUserAccountRequest request = new FetchUserAccountRequest(user);
+                client.fetchUserAccount(request, AuthenticateActivity.this.fetchUserAccountClientCallback);
             }
         });
     }
+
+    private final FetchUserAccountRequest.FetchUserAccountClientCallback fetchUserAccountClientCallback = new FetchUserAccountRequest.FetchUserAccountClientCallback(){
+        @Override
+        public void newAccount(User user) {
+        }
+
+        @Override
+        public void hasAccount(User user) {
+        }
+    };
 
 }
