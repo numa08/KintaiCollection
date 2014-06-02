@@ -39,4 +39,17 @@ public class SyussyaRequestTest extends TestCase {
         final boolean called = countdown.await(2000, TimeUnit.MILLISECONDS);
         assertTrue("Syussya success is not invoked", called);
     }
+
+    public void testNotInvokeSuccessWhenResponseInvalidJson() throws Exception {
+        final CountDownLatch countdown = new CountDownLatch(1);
+        final SyussyaRequest.SyussyaRequestCallback callback = new SyussyaRequest.SyussyaRequestCallback() {
+            @Override
+            public void onSyussyaSuccess() {
+                countdown.countDown();
+            }
+        };
+        callback.onSuccess(new JSONObject());
+        final boolean called = countdown.await(2000, TimeUnit.MILLISECONDS);
+        assertFalse("Syussya success is called", called);
+    }
 }

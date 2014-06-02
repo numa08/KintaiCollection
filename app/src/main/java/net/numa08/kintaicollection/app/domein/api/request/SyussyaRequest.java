@@ -2,6 +2,7 @@ package net.numa08.kintaicollection.app.domein.api.request;
 
 import net.numa08.kintaicollection.app.domein.api.KintaiCollectionWebClient;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Date;
@@ -32,7 +33,17 @@ public class SyussyaRequest implements KintaiCollectionApiRequest {
 
         @Override
         public void onSuccess(JSONObject json) {
-            onSyussyaSuccess();
+            try {
+                final boolean succeed = json.getBoolean("success");
+                if (succeed) {
+                    onSyussyaSuccess();
+                } else {
+                    onFailed(new Exception("Syussya failed"));
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+                onFailed(e);
+            }
         }
 
         @Override
