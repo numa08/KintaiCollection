@@ -9,9 +9,11 @@ import java.util.Date;
 public class SyussyaRequest implements KintaiCollectionApiRequest {
 
     private final Date date;
+    private final String id;
 
-    public SyussyaRequest(Date date) {
+    public SyussyaRequest(Date date, String id) {
         this.date = date;
+        this.id = id;
     }
 
 

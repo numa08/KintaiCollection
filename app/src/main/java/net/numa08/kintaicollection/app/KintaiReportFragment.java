@@ -11,6 +11,7 @@ import net.numa08.kintaicollection.app.domein.api.KintaiCollectionWebClient;
 import net.numa08.kintaicollection.app.domein.api.request.KintaiCollectionApiRequest;
 import net.numa08.kintaicollection.app.domein.api.request.SyussyaRequest;
 import net.numa08.kintaicollection.app.domein.api.request.TaisyaRequest;
+import net.numa08.kintaicollection.app.models.timeline.User;
 
 import java.util.Date;
 
@@ -52,7 +53,7 @@ public class KintaiReportFragment extends Fragment {
     private final View.OnClickListener syussyaButtonClicked = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            final SyussyaRequest request = new SyussyaRequest(new Date());
+            final SyussyaRequest request = new SyussyaRequest(new Date(), fetchUser().id);
             client.bindProduct(Option.some(request), Option.some(syussyaRequestCallback)).foreach(new Effect<P3<KintaiCollectionWebClient, SyussyaRequest, SyussyaRequest.SyussyaRequestCallback>>() {
                 @Override
                 public void e(P3<KintaiCollectionWebClient, SyussyaRequest, SyussyaRequest.SyussyaRequestCallback> product) {
@@ -65,7 +66,7 @@ public class KintaiReportFragment extends Fragment {
     private final View.OnClickListener tasyaButtonClicked = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            final TaisyaRequest request = new TaisyaRequest(new Date());
+            final TaisyaRequest request = new TaisyaRequest(new Date(), fetchUser().id);
             client.bindProduct(Option.some(request), Option.some(taisyaRequestCallback)).foreach(new Effect<P3<KintaiCollectionWebClient, TaisyaRequest, TaisyaRequest.TaisyaRequestCallback>>() {
                 @Override
                 public void e(P3<KintaiCollectionWebClient, TaisyaRequest, TaisyaRequest.TaisyaRequestCallback> product) {
@@ -89,5 +90,9 @@ public class KintaiReportFragment extends Fragment {
 
         }
     };
+
+    private User fetchUser(){
+        return null;
+    }
 
 }
