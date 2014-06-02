@@ -2,9 +2,11 @@ package net.numa08.kintaicollection.app.domein.api.request;
 
 import net.numa08.kintaicollection.app.domein.api.KintaiCollectionWebClient;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Date;
+import java.util.HashMap;
 
 public class TaisyaRequest implements KintaiCollectionApiRequest {
 
@@ -19,7 +21,10 @@ public class TaisyaRequest implements KintaiCollectionApiRequest {
 
     @Override
     public JSONObject request() {
-        return null;
+        return new JSONObject(new HashMap<String, String>(){{
+            put("id", id);
+            put("time", Long.toString(date.getTime()));
+        }});
     }
 
     public static abstract class TaisyaRequestCallback implements KintaiCollectionWebClient.KintaiCollectionApiCallback {
@@ -27,7 +32,17 @@ public class TaisyaRequest implements KintaiCollectionApiRequest {
 
         @Override
         public void onSuccess(JSONObject json) {
-            onTaisyaSuccess();
+            try {
+                final boolean succeed = json.getBoolean("success");
+                if (succeed) {
+                    onTaisyaSuccess();
+                } else {
+                    onFailed(new Exception("Taisya Failed"));
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+                onFailed(e);
+            }
         }
 
         @Override
