@@ -15,6 +15,10 @@ import net.numa08.kintaicollection.app.domein.api.request.TaisyaRequest;
 
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
 public class KintaiCollectionWebClient {
 
     public interface KintaiCollectionApiCallback {
@@ -27,7 +31,15 @@ public class KintaiCollectionWebClient {
     private final RequestQueue queue;
 
     public KintaiCollectionWebClient(Context context) {
-        this.apiUrl = "";
+        final Properties properties = new Properties();
+        try {
+            final InputStream inputStream = context.getAssets().open("application.properties");
+            properties.load(inputStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        this.apiUrl = properties.getProperty("api_url","");
         queue = Volley.newRequestQueue(context);
     }
 
