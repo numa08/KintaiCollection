@@ -10,6 +10,7 @@ import com.android.volley.toolbox.Volley;
 
 import net.numa08.kintaicollection.app.domein.api.request.FetchUserAccountRequest;
 import net.numa08.kintaicollection.app.domein.api.request.KintaiCollectionApiRequest;
+import net.numa08.kintaicollection.app.domein.api.request.KintaiTimelineLoadRequest;
 import net.numa08.kintaicollection.app.domein.api.request.SyussyaRequest;
 import net.numa08.kintaicollection.app.domein.api.request.TaisyaRequest;
 
@@ -53,6 +54,10 @@ public class KintaiCollectionWebClient {
 
     public void taisya(TaisyaRequest request, TaisyaRequest.TaisyaRequestCallback callback) {
         invokeAPI("taisya", request, callback, queue);
+    }
+
+    public void loadKintaiTimeline(KintaiTimelineLoadRequest request, KintaiTimelineLoadRequest.KintaiTimelineLoadCallback callback) {
+        invokeAPI("timeline", request, callback, queue);
     }
 
     protected void invokeAPI(String endpoint, KintaiCollectionApiRequest request, final KintaiCollectionApiCallback callback, RequestQueue queue) {
