@@ -47,26 +47,6 @@ public class AuthenticateActivity extends Activity implements UserAuthentication
 
     @Override
     public void onCompleted(MobileServiceUser mobileServiceUser, Exception e, ServiceFilterResponse serviceFilterResponse) {
-        Option.fromNull(mobileServiceUser).foreach(new Effect<MobileServiceUser>() {
-            @Override
-            public void e(MobileServiceUser mobileServiceUser) {
-                final KintaiCollectionWebClient client = new KintaiCollectionWebClient(AuthenticateActivity.this.getApplicationContext());
-                final String id = mobileServiceUser.getUserId().split(":")[1];
-                final User user = new User("", id, "", mobileServiceUser.getAuthenticationToken());
-                final FetchUserAccountRequest request = new FetchUserAccountRequest(user);
-                client.fetchUserAccount(request, AuthenticateActivity.this.fetchUserAccountClientCallback);
-            }
-        });
     }
-
-    private final FetchUserAccountRequest.FetchUserAccountClientCallback fetchUserAccountClientCallback = new FetchUserAccountRequest.FetchUserAccountClientCallback(){
-        @Override
-        public void newAccount(User user) {
-        }
-
-        @Override
-        public void hasAccount(User user) {
-        }
-    };
 
 }
