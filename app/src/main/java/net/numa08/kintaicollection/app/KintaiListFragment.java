@@ -55,7 +55,7 @@ public class KintaiListFragment extends ListFragment implements AbsListView.OnIt
                        .map(new F<P2<Activity, MobileServiceUser>, Either<Exception, MobileServiceClient>>() {
                            @Override
                            public Either<Exception, MobileServiceClient> f(P2<Activity, MobileServiceUser> production) {
-                               Either<Exception, MobileServiceClient> eitherClient = null;
+                               Either<Exception, MobileServiceClient> eitherClient;
                                try {
                                    final MobileServiceClient client = new MobileServiceClient(getString(R.string.azure_endpoint), getString(R.string.azure_key), production._1());
                                    client.setCurrentUser(production._2());
@@ -125,6 +125,6 @@ public class KintaiListFragment extends ListFragment implements AbsListView.OnIt
 
     @Override
     public void onCompleted(JsonElement jsonElement, Exception e, ServiceFilterResponse serviceFilterResponse) {
-        
+
     }
 }
