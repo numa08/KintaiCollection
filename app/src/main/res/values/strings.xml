@@ -9,5 +9,6 @@
     <string name="taisya">ﾀｲｼｬ</string>
     <string name="title_activity_authoricate">AuthoricateActivity</string>
     <string name="signinWithTwitter">Singin in with Twitter</string>
+    <string name="msg_login_failed">ログインに失敗しました</string>
 
 </resources>
