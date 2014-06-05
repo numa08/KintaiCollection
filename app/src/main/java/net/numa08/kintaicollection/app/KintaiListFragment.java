@@ -36,7 +36,7 @@ import fj.P;
 import fj.P2;
 import fj.data.Option;
 
-public class KintaiListFragment extends ListFragment implements AbsListView.OnItemClickListener ,LoaderManager.LoaderCallbacks<List<KintaiTimelineItem>>{
+public class KintaiListFragment extends ListFragment implements AbsListView.OnItemClickListener {
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -59,9 +59,7 @@ public class KintaiListFragment extends ListFragment implements AbsListView.OnIt
             public void e(ArrayAdapter arrayAdapter) {
                 setListAdapter(arrayAdapter);
             }
-        });
-
-        getLoaderManager().restartLoader(0, null, this);
+        }); 
     }
 
     @Override
@@ -81,22 +79,6 @@ public class KintaiListFragment extends ListFragment implements AbsListView.OnIt
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {}
 
     @Override
-    public Loader<List<KintaiTimelineItem>> onCreateLoader(int id, Bundle args) {
-        final Option<Loader<List<KintaiTimelineItem>>> loader = Option.fromNull(getActivity()).map(new F<Activity, Loader<List<KintaiTimelineItem>>>() {
-            @Override
-            public Loader<List<KintaiTimelineItem>> f(Activity activity) {
-                return new KintaiTimelineLoader(activity);
-            }
-        });
-        if (loader.isSome()) {
-            loader.some().forceLoad();
-            return loader.some();
-        } else {
-            return null;
-        }
-    }
-
-    @Override
     public void onPause() {
         super.onPause();
         Option.fromNull(getActivity())
@@ -108,34 +90,9 @@ public class KintaiListFragment extends ListFragment implements AbsListView.OnIt
               });
     }
 
-    @Override
-    public void onLoadFinished(Loader<List<KintaiTimelineItem>> loader, List<KintaiTimelineItem> data) {
-        Option.fromNull(getListAdapter()).filter(new F<ListAdapter, Boolean>() {
-            @Override
-            public Boolean f(ListAdapter listAdapter) {
-                return listAdapter instanceof KintaiItemsAdapter;
-            }
-        }).map(new F<ListAdapter, KintaiItemsAdapter>() {
-            @Override
-            public KintaiItemsAdapter f(ListAdapter listAdapter) {
-                return (KintaiItemsAdapter)listAdapter;
-            }
-        }).bindProduct(Option.fromNull(data))
-          .foreach(new Effect<P2<KintaiItemsAdapter, List<KintaiTimelineItem>>>() {
-              @Override
-              public void e(P2<KintaiItemsAdapter, List<KintaiTimelineItem>> product) {
-                  product._1().addAll(product._2());
-              }
-          });
-    }
-
-    @Override
-    public void onLoaderReset(Loader<List<KintaiTimelineItem>> loader) {}
-
     private final BroadcastReceiver receiveTimelineUpdate = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            KintaiListFragment.this.getLoaderManager().restartLoader(0, null, KintaiListFragment.this);
         }
     };
 }

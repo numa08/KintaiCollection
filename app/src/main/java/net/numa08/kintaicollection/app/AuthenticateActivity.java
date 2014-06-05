@@ -15,22 +15,13 @@ import com.microsoft.windowsazure.mobileservices.MobileServiceUser;
 import com.microsoft.windowsazure.mobileservices.ServiceFilterResponse;
 import com.microsoft.windowsazure.mobileservices.UserAuthenticationCallback;
 
-import net.numa08.kintaicollection.app.domein.api.KintaiCollectionWebClient;
-import net.numa08.kintaicollection.app.domein.api.request.FetchUserAccountRequest;
-import net.numa08.kintaicollection.app.models.timeline.User;
-
-import org.apache.http.HttpStatus;
-import org.apache.http.auth.AUTH;
-
 import java.net.MalformedURLException;
 
 import fj.Effect;
 import fj.F;
-import fj.P2;
 import fj.Unit;
 import fj.data.Either;
 import fj.data.Option;
-import fj.test.reflect.Main;
 
 
 public class AuthenticateActivity extends Activity implements UserAuthenticationCallback {
@@ -97,11 +88,11 @@ public class AuthenticateActivity extends Activity implements UserAuthentication
                })
                .left()
                .foreach(new Effect<Exception>() {
-                  @Override
-                  public void e(Exception e) {
-                      Toast.makeText(AuthenticateActivity.this, R.string.msg_login_failed, Toast.LENGTH_LONG).show();
-                      Log.e(getString(R.string.app_name),"Login failed", e);
-                  }
+                   @Override
+                   public void e(Exception e) {
+                       Toast.makeText(AuthenticateActivity.this, R.string.msg_login_failed, Toast.LENGTH_LONG).show();
+                       Log.e(getString(R.string.app_name), "Login failed", e);
+                   }
                });
     }
 
