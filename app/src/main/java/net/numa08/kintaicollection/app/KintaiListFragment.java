@@ -2,64 +2,91 @@ package net.numa08.kintaicollection.app;
 
 import android.app.Activity;
 import android.app.ListFragment;
-import android.app.LoaderManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.Loader;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.LayoutInflater;
+import android.preference.PreferenceManager;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
+import com.google.gson.JsonElement;
+import com.microsoft.windowsazure.mobileservices.ApiJsonOperationCallback;
+import com.microsoft.windowsazure.mobileservices.MobileServiceClient;
+import com.microsoft.windowsazure.mobileservices.MobileServiceUser;
+import com.microsoft.windowsazure.mobileservices.ServiceFilterResponse;
 
-import net.numa08.kintaicollection.app.domein.KintaiTimelineLoader;
-import net.numa08.kintaicollection.app.dummy.DummyContent;
-import net.numa08.kintaicollection.app.models.timeline.Kintai;
-import net.numa08.kintaicollection.app.models.timeline.KintaiTimelineItem;
 import net.numa08.kintaicollection.app.views.KintaiItemsAdapter;
 
-import java.util.List;
+import java.net.MalformedURLException;
 
 import fj.Effect;
 import fj.F;
 import fj.P;
 import fj.P2;
+import fj.data.Either;
 import fj.data.Option;
 
-public class KintaiListFragment extends ListFragment implements AbsListView.OnItemClickListener {
+public class KintaiListFragment extends ListFragment implements AbsListView.OnItemClickListener , ApiJsonOperationCallback {
+
+    Option<MobileServiceClient> client = Option.none();
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        final Either<Exception, MobileServiceClient> eitherClient = Option.fromNull(getActivity())
+                       .map(new F<Activity, P2<Activity, MobileServiceUser>>() {
+                           @Override
+                           public P2<Activity, MobileServiceUser> f(Activity activity) {
+                               final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(activity);
+                               final String id = pref.getString(AuthenticateActivity.KEY_USER_ID, "");
+                               final String token = pref.getString(AuthenticateActivity.KEY_USER_TOKEN, "");
+                               final MobileServiceUser user = new MobileServiceUser(id);
+                               user.setAuthenticationToken(token);
+                               return P.p(activity, user);
+                           }})
+                       .map(new F<P2<Activity, MobileServiceUser>, Either<Exception, MobileServiceClient>>() {
+                           @Override
+                           public Either<Exception, MobileServiceClient> f(P2<Activity, MobileServiceUser> production) {
+                               Either<Exception, MobileServiceClient> eitherClient = null;
+                               try {
+                                   final MobileServiceClient client = new MobileServiceClient(getString(R.string.azure_endpoint), getString(R.string.azure_key), production._1());
+                                   client.setCurrentUser(production._2());
+                                   eitherClient = Either.right(client);
+                               } catch (MalformedURLException e) {
+                                   e.printStackTrace();
+                                   eitherClient = Either.left(new Exception(e));
+                               }
+                               return eitherClient;
+                           }})
+                       .orSome(Either.<Exception, MobileServiceClient>left(new Exception("Activity is not created")));
+        client = eitherClient.right().toOption();
 
         Option.fromNull(getActivity()).map(new F<Activity, P2<Activity, RequestQueue>>() {
-            @Override
-            public P2<Activity, RequestQueue> f(Activity activity) {
-                final RequestQueue queue = Volley.newRequestQueue(activity);
-                return P.p(activity, queue);
-            }
-        }).map(new F<P2<Activity, RequestQueue>, ArrayAdapter>() {
-            @Override
-            public ArrayAdapter f(P2<Activity, RequestQueue> product) {
-                return new KintaiItemsAdapter(product._1(), product._2());
-            }
-        }).foreach(new Effect<ArrayAdapter>() {
-            @Override
-            public void e(ArrayAdapter arrayAdapter) {
-                setListAdapter(arrayAdapter);
-            }
-        }); 
+                                            @Override
+                                            public P2<Activity, RequestQueue> f(Activity activity) {
+                                                final RequestQueue queue = Volley.newRequestQueue(activity);
+                                                return P.p(activity, queue);
+                                            }})
+                                      .map(new F<P2<Activity, RequestQueue>, ArrayAdapter>() {
+                                          @Override
+                                          public ArrayAdapter f(P2<Activity, RequestQueue> product) {
+                                              return new KintaiItemsAdapter(product._1(), product._2());
+                                          }
+                                      })
+                                      .foreach(new Effect<ArrayAdapter>() {
+                                          @Override
+                                          public void e(ArrayAdapter arrayAdapter) {
+                                              setListAdapter(arrayAdapter);
+                                          }
+                                      });
     }
 
     @Override
@@ -95,4 +122,9 @@ public class KintaiListFragment extends ListFragment implements AbsListView.OnIt
         public void onReceive(Context context, Intent intent) {
         }
     };
+
+    @Override
+    public void onCompleted(JsonElement jsonElement, Exception e, ServiceFilterResponse serviceFilterResponse) {
+        
+    }
 }
