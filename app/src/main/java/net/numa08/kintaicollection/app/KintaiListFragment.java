@@ -9,10 +9,12 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
@@ -101,7 +103,18 @@ public class KintaiListFragment extends ListFragment implements AbsListView.OnIt
                       activity.registerReceiver(receiveTimelineUpdate,filter);
                   }
               });
+        updateTimeline();
     }
+
+    private void updateTimeline() {
+        client.foreach(new Effect<MobileServiceClient>() {
+            @Override
+            public void e(MobileServiceClient client) {
+                client.invokeApi("timeline", KintaiListFragment.this);
+            }
+        });
+    }
+
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {}
 
@@ -120,11 +133,30 @@ public class KintaiListFragment extends ListFragment implements AbsListView.OnIt
     private final BroadcastReceiver receiveTimelineUpdate = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            updateTimeline();
         }
     };
 
     @Override
     public void onCompleted(JsonElement jsonElement, Exception e, ServiceFilterResponse serviceFilterResponse) {
-
+        final Either<Exception, JsonElement> either;
+        if (e == null) {
+            either = Either.right(jsonElement);
+        } else {
+            either = Either.left(e);
+        }
+        either.right().foreach(new Effect<JsonElement>() {
+            @Override
+            public void e(JsonElement jsonElement) {
+                Toast.makeText(getActivity(), "Get response OK", Toast.LENGTH_LONG).show();
+                Log.d(getString(R.string.app_name), jsonElement.toString());
+            }});
+        either.left().foreach(new Effect<Exception>() {
+            @Override
+            public void e(Exception e) {
+                Toast.makeText(getActivity(), "Failed Get", Toast.LENGTH_LONG).show();
+                Log.e(getString(R.string.app_name), "Failed Get", e);
+            }
+        });
     }
 }
