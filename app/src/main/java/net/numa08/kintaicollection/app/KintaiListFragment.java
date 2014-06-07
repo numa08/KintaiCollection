@@ -26,6 +26,8 @@ import com.microsoft.windowsazure.mobileservices.ServiceFilterResponse;
 
 import net.numa08.kintaicollection.app.views.KintaiItemsAdapter;
 
+import org.apache.http.client.methods.HttpGet;
+
 import java.net.MalformedURLException;
 
 import fj.Effect;
@@ -100,7 +102,7 @@ public class KintaiListFragment extends ListFragment implements AbsListView.OnIt
                   public void e(Activity activity) {
                       final IntentFilter filter = new IntentFilter();
                       filter.addAction(MainActivity.Action.UPDATE_KINTAI_TIMELINE);
-                      activity.registerReceiver(receiveTimelineUpdate,filter);
+                      activity.registerReceiver(receiveTimelineUpdate, filter);
                   }
               });
         updateTimeline();
@@ -110,7 +112,7 @@ public class KintaiListFragment extends ListFragment implements AbsListView.OnIt
         client.foreach(new Effect<MobileServiceClient>() {
             @Override
             public void e(MobileServiceClient client) {
-                client.invokeApi("timeline", KintaiListFragment.this);
+                client.invokeApi("timeline", null, HttpGet.METHOD_NAME, null, KintaiListFragment.this);
             }
         });
     }
@@ -151,12 +153,19 @@ public class KintaiListFragment extends ListFragment implements AbsListView.OnIt
                 Toast.makeText(getActivity(), "Get response OK", Toast.LENGTH_LONG).show();
                 Log.d(getString(R.string.app_name), jsonElement.toString());
             }});
-        either.left().foreach(new Effect<Exception>() {
-            @Override
-            public void e(Exception e) {
-                Toast.makeText(getActivity(), "Failed Get", Toast.LENGTH_LONG).show();
-                Log.e(getString(R.string.app_name), "Failed Get", e);
-            }
-        });
+        either.left()
+              .toOption()
+              .map(new F<Exception, Activity>() {
+                    @Override
+                    public Activity f(Exception e) {
+                        Log.e(getString(R.string.app_name), "Failed Get", e);
+                        return getActivity();
+                    }})
+              .foreach(new Effect<Activity>() {
+                  @Override
+                  public void e(Activity activity) {
+                      Toast.makeText(activity, "Failed Get", Toast.LENGTH_LONG).show();
+                  }
+              });
     }
 }
