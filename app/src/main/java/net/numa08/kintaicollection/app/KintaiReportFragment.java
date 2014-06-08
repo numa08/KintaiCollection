@@ -22,7 +22,7 @@ import net.numa08.kintaicollection.app.views.ProgressActivity;
 
 import org.apache.http.client.methods.HttpPut;
 
-import java.util.logging.Handler;
+import java.lang.ref.WeakReference;
 
 import fj.Effect;
 import fj.F;
@@ -48,18 +48,19 @@ public class KintaiReportFragment extends Fragment implements ApiJsonOperationCa
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        final WeakReference<KintaiReportFragment> fragment = new WeakReference<KintaiReportFragment>(this);
         taisyaButton = Option.fromNull(view.findViewById(R.id.taisyaButton))
                              .map(new F<View, View>() {
                                  @Override
                                  public View f(View view) {
-                                     view.setOnClickListener(tasyaButtonClicked);
+                                     view.setOnClickListener(new ReportButtonClickListener(fragment, "report/taisya"));
                                      return view;
                                  }});
         syussyaButton = Option.fromNull(view.findViewById(R.id.syussyaButton))
                               .map(new F<View, View>() {
                                   @Override
                                   public View f(View view) {
-                                      view.setOnClickListener(syussyaButtonClicked);
+                                      view.setOnClickListener(new ReportButtonClickListener(fragment, "report/syussya"));
                                       return view;
                                   }});
     }
@@ -80,57 +81,46 @@ public class KintaiReportFragment extends Fragment implements ApiJsonOperationCa
 
     }
 
+    private final static class ReportButtonClickListener implements View.OnClickListener {
 
+        private final WeakReference<KintaiReportFragment> parentFragment;
+        private final String apiPath;
 
-    private final View.OnClickListener syussyaButtonClicked = new View.OnClickListener() {
+        private ReportButtonClickListener(WeakReference<KintaiReportFragment> parentFragment, String apiPath) {
+            this.parentFragment = parentFragment;
+            this.apiPath = apiPath;
+        }
+
         @Override
         public void onClick(View v) {
-            List.list(taisyaButton, syussyaButton)
-                .foreach(new Effect<Option<View>>() {
-                    @Override
-                    public void e(Option<View> view) {
-                        view.foreach(new Effect<View>() {
+            final Option<KintaiReportFragment> fragment = Option.fromNull(parentFragment.get());
+            fragment.foreach(new Effect<KintaiReportFragment>() {
+                @Override
+                public void e(final KintaiReportFragment f) {
+                    List.list(f.taisyaButton, f.syussyaButton)
+                        .foreach(new Effect<Option<View>>() {
                             @Override
-                            public void e(View view) {
-                                view.setEnabled(false);
+                            public void e(Option<View> v) {
+                                v.foreach(new Effect<View>() {
+                                    @Override
+                                    public void e(View view) {
+                                        view.setEnabled(false);
+                                    }
+                                });
+
                             }
                         });
-                    }
-                });
-            startProgress();
-            client.foreach(new Effect<MobileServiceClient>() {
-                @Override
-                public void e(MobileServiceClient client) {
-                    client.invokeApi("report/syussya", HttpPut.METHOD_NAME, null, KintaiReportFragment.this);
+                    f.startProgress();
+                    f.client.foreach(new Effect<MobileServiceClient>() {
+                        @Override
+                        public void e(MobileServiceClient client) {
+                            client.invokeApi(apiPath, HttpPut.METHOD_NAME, null, f);
+                        }
+                    });
                 }
             });
         }
-    };
-
-    private final View.OnClickListener tasyaButtonClicked = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            List.list(taisyaButton, syussyaButton)
-                .foreach(new Effect<Option<View>>() {
-                    @Override
-                    public void e(Option<View> view) {
-                        view.foreach(new Effect<View>() {
-                            @Override
-                            public void e(View view) {
-                                view.setEnabled(false);
-                            }
-                        });
-                    }
-                });
-            startProgress();
-            client.foreach(new Effect<MobileServiceClient>() {
-                @Override
-                public void e(MobileServiceClient client) {
-                    client.invokeApi("report/taisya", HttpPut.METHOD_NAME, null, KintaiReportFragment.this);
-                }
-            });
-        }
-    };
+    }
 
     @Override
     public void onCompleted(JsonElement jsonObject, Exception exception, ServiceFilterResponse response) {
@@ -188,12 +178,13 @@ public class KintaiReportFragment extends Fragment implements ApiJsonOperationCa
                     public Either<? extends Exception, ProgressActivity> f(Activity activity) {
                         Either<? extends Exception, ProgressActivity> eitherActivity;
                         try {
-                            eitherActivity = Either.right((ProgressActivity)activity);
+                            eitherActivity = Either.right((ProgressActivity) activity);
                         } catch (ClassCastException e) {
                             eitherActivity = Either.left(e);
                         }
                         return eitherActivity;
-                    }})
+                    }
+                })
                 .orSome(Either.<Exception, ProgressActivity>left(new Exception("Activity is null")))
                 .right()
                 .toOption()
@@ -205,7 +196,7 @@ public class KintaiReportFragment extends Fragment implements ApiJsonOperationCa
                         return new Thread(new Runnable() {
                             @Override
                             public void run() {
-                                while(isProgressRunning) {
+                                while (isProgressRunning) {
                                     try {
                                         Thread.sleep(300);
                                     } catch (InterruptedException e) {
@@ -222,7 +213,8 @@ public class KintaiReportFragment extends Fragment implements ApiJsonOperationCa
                                 }
                             }
                         });
-                    }})
+                    }
+                })
                     .foreach(new Effect<Thread>() {
                         @Override
                         public void e(Thread thread) {
