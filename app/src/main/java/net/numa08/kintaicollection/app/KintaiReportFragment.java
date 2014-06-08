@@ -18,8 +18,11 @@ import com.microsoft.windowsazure.mobileservices.MobileServiceUser;
 import com.microsoft.windowsazure.mobileservices.ServiceFilterResponse;
 
 import net.numa08.kintaicollection.app.models.azure.MobileService;
+import net.numa08.kintaicollection.app.views.ProgressActivity;
 
 import org.apache.http.client.methods.HttpPut;
+
+import java.util.logging.Handler;
 
 import fj.Effect;
 import fj.F;
@@ -33,7 +36,8 @@ public class KintaiReportFragment extends Fragment implements ApiJsonOperationCa
     private Option<MobileServiceClient> client = Option.none();
     private Option<View> taisyaButton = Option.none();
     private Option<View> syussyaButton = Option.none();
-
+    private int mProgress = 0;
+    private volatile boolean isProgressRunning = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -76,6 +80,8 @@ public class KintaiReportFragment extends Fragment implements ApiJsonOperationCa
 
     }
 
+
+
     private final View.OnClickListener syussyaButtonClicked = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -91,6 +97,7 @@ public class KintaiReportFragment extends Fragment implements ApiJsonOperationCa
                         });
                     }
                 });
+            startProgress();
             client.foreach(new Effect<MobileServiceClient>() {
                 @Override
                 public void e(MobileServiceClient client) {
@@ -115,6 +122,7 @@ public class KintaiReportFragment extends Fragment implements ApiJsonOperationCa
                         });
                     }
                 });
+            startProgress();
             client.foreach(new Effect<MobileServiceClient>() {
                 @Override
                 public void e(MobileServiceClient client) {
@@ -138,6 +146,7 @@ public class KintaiReportFragment extends Fragment implements ApiJsonOperationCa
                     });
                 }
             });
+        stopProgress();
         final Either<Exception, JsonElement> either;
         if (exception == null) {
             either = Either.right(jsonObject);
@@ -168,5 +177,88 @@ public class KintaiReportFragment extends Fragment implements ApiJsonOperationCa
                       Log.e(getString(R.string.app_name), "Failed PUT", product._1());
                   }
               });
+    }
+
+    private void startProgress() {
+        mProgress = 0;
+        isProgressRunning = true;
+        Option.fromNull(getActivity())
+                .map(new F<Activity, Either<? extends Exception, ProgressActivity>>() {
+                    @Override
+                    public Either<? extends Exception, ProgressActivity> f(Activity activity) {
+                        Either<? extends Exception, ProgressActivity> eitherActivity;
+                        try {
+                            eitherActivity = Either.right((ProgressActivity)activity);
+                        } catch (ClassCastException e) {
+                            eitherActivity = Either.left(e);
+                        }
+                        return eitherActivity;
+                    }})
+                .orSome(Either.<Exception, ProgressActivity>left(new Exception("Activity is null")))
+                .right()
+                .toOption()
+                .map(new F<ProgressActivity, Thread>() {
+                    @Override
+                    public Thread f(final ProgressActivity progressActivity) {
+                        progressActivity.setActivityProgressBarVisible(true);
+                        progressActivity.setActivityProgress(0);
+                        return new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                while(isProgressRunning) {
+                                    try {
+                                        Thread.sleep(300);
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+                                    progressActivity.runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            mProgress += 5;
+                                            progressActivity.setActivityProgress(mProgress);
+                                            Log.d(getString(R.string.app_name), "Progress is " + mProgress);
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                    }})
+                    .foreach(new Effect<Thread>() {
+                        @Override
+                        public void e(Thread thread) {
+                            thread.start();
+                        }
+                    });
+    }
+
+    private void stopProgress() {
+        isProgressRunning = false;
+        mProgress = 0;
+        Option.fromNull(getActivity())
+                .map(new F<Activity, Either<? extends Exception, ProgressActivity>>() {
+                    @Override
+                    public Either<? extends Exception, ProgressActivity> f(Activity activity) {
+                        Either<? extends Exception, ProgressActivity> eitherActivity;
+                        try {
+                            eitherActivity = Either.right((ProgressActivity)activity);
+                        } catch (ClassCastException e) {
+                            eitherActivity = Either.left(e);
+                        }
+                        return eitherActivity;
+                    }})
+                .orSome(Either.<Exception, ProgressActivity>left(new Exception("Activity is null")))
+                .right()
+                .foreach(new Effect<ProgressActivity>() {
+                    @Override
+                    public void e(final ProgressActivity progressActivity) {
+                        progressActivity.setActivityProgress(100);
+                        new android.os.Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                progressActivity.setActivityProgressBarVisible(false);
+                            }
+                        }, 500);
+                    }
+                });
     }
 }
