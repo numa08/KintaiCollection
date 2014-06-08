@@ -25,11 +25,14 @@ import fj.Effect;
 import fj.F;
 import fj.P2;
 import fj.data.Either;
+import fj.data.List;
 import fj.data.Option;
 
 public class KintaiReportFragment extends Fragment implements ApiJsonOperationCallback {
 
-    Option<MobileServiceClient> client = Option.none();
+    private Option<MobileServiceClient> client = Option.none();
+    private Option<View> taisyaButton = Option.none();
+    private Option<View> syussyaButton = Option.none();
 
 
     @Override
@@ -41,8 +44,20 @@ public class KintaiReportFragment extends Fragment implements ApiJsonOperationCa
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        view.findViewById(R.id.syussyaButton).setOnClickListener(syussyaButtonClicked);
-        view.findViewById(R.id.taisyaButton).setOnClickListener(tasyaButtonClicked);
+        taisyaButton = Option.fromNull(view.findViewById(R.id.taisyaButton))
+                             .map(new F<View, View>() {
+                                 @Override
+                                 public View f(View view) {
+                                     view.setOnClickListener(tasyaButtonClicked);
+                                     return view;
+                                 }});
+        syussyaButton = Option.fromNull(view.findViewById(R.id.syussyaButton))
+                              .map(new F<View, View>() {
+                                  @Override
+                                  public View f(View view) {
+                                      view.setOnClickListener(syussyaButtonClicked);
+                                      return view;
+                                  }});
     }
 
     @Override
@@ -64,6 +79,18 @@ public class KintaiReportFragment extends Fragment implements ApiJsonOperationCa
     private final View.OnClickListener syussyaButtonClicked = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            List.list(taisyaButton, syussyaButton)
+                .foreach(new Effect<Option<View>>() {
+                    @Override
+                    public void e(Option<View> view) {
+                        view.foreach(new Effect<View>() {
+                            @Override
+                            public void e(View view) {
+                                view.setEnabled(false);
+                            }
+                        });
+                    }
+                });
             client.foreach(new Effect<MobileServiceClient>() {
                 @Override
                 public void e(MobileServiceClient client) {
@@ -76,6 +103,18 @@ public class KintaiReportFragment extends Fragment implements ApiJsonOperationCa
     private final View.OnClickListener tasyaButtonClicked = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            List.list(taisyaButton, syussyaButton)
+                .foreach(new Effect<Option<View>>() {
+                    @Override
+                    public void e(Option<View> view) {
+                        view.foreach(new Effect<View>() {
+                            @Override
+                            public void e(View view) {
+                                view.setEnabled(false);
+                            }
+                        });
+                    }
+                });
             client.foreach(new Effect<MobileServiceClient>() {
                 @Override
                 public void e(MobileServiceClient client) {
@@ -87,6 +126,18 @@ public class KintaiReportFragment extends Fragment implements ApiJsonOperationCa
 
     @Override
     public void onCompleted(JsonElement jsonObject, Exception exception, ServiceFilterResponse response) {
+        List.list(syussyaButton, taisyaButton)
+            .foreach(new Effect<Option<View>>() {
+                @Override
+                public void e(Option<View> view) {
+                    view.foreach(new Effect<View>() {
+                        @Override
+                        public void e(View view) {
+                            view.setEnabled(true);
+                        }
+                    });
+                }
+            });
         final Either<Exception, JsonElement> either;
         if (exception == null) {
             either = Either.right(jsonObject);
