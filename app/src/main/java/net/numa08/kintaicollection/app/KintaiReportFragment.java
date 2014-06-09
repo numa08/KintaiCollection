@@ -161,7 +161,6 @@ public class KintaiReportFragment extends Fragment implements ApiJsonOperationCa
               .foreach(new Effect<P2<JsonElement, Activity>>() {
                   @Override
                   public void e(P2<JsonElement, Activity> product) {
-                      Toast.makeText(product._2(), "Report Ok", Toast.LENGTH_LONG).show();
                       Log.d(getString(R.string.app_name), product._2().toString());
                       final Intent intent = new Intent();
                       intent.setAction(MainActivity.Action.UPDATE_KINTAI_TIMELINE);
