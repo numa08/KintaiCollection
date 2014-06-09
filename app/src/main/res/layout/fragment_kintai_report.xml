@@ -45,6 +45,7 @@
         android:layout_alignRight="@id/syussyaButton"
         android:layout_alignTop="@id/syussyaButton"
         android:layout_alignBottom="@+id/syussyaButton"
+        android:visibility="gone"
         />
     <ProgressBar
         android:id="@+id/taisyaProgress"
@@ -54,5 +55,6 @@
         android:layout_alignRight="@id/taisyaButton"
         android:layout_alignTop="@id/taisyaButton"
         android:layout_alignBottom="@id/taisyaButton"
+        android:visibility="gone"
         />
 </RelativeLayout>

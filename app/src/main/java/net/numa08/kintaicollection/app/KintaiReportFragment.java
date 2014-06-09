@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.gson.JsonElement;
@@ -18,7 +19,6 @@ import com.microsoft.windowsazure.mobileservices.MobileServiceUser;
 import com.microsoft.windowsazure.mobileservices.ServiceFilterResponse;
 
 import net.numa08.kintaicollection.app.models.azure.MobileService;
-import net.numa08.kintaicollection.app.views.ProgressActivity;
 
 import org.apache.http.client.methods.HttpPut;
 
@@ -36,8 +36,13 @@ public class KintaiReportFragment extends Fragment implements ApiJsonOperationCa
     private Option<MobileServiceClient> client = Option.none();
     private Option<View> taisyaButton = Option.none();
     private Option<View> syussyaButton = Option.none();
-    private int mProgress = 0;
-    private volatile boolean isProgressRunning = false;
+    private Option<ProgressBar> syussyaProgress = Option.none();
+    private Option<ProgressBar> taisyaProgress = Option.none();
+
+    private enum Operation {
+        Syussya,
+        Taisya;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -48,7 +53,7 @@ public class KintaiReportFragment extends Fragment implements ApiJsonOperationCa
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        final WeakReference<KintaiReportFragment> fragment = new WeakReference<KintaiReportFragment>(this);
+        final WeakReference<KintaiReportFragment> fragment = new WeakReference<>(this);
         taisyaButton = Option.fromNull(view.findViewById(R.id.taisyaButton))
                              .map(new F<View, View>() {
                                  @Override
@@ -63,6 +68,8 @@ public class KintaiReportFragment extends Fragment implements ApiJsonOperationCa
                                       view.setOnClickListener(new ReportButtonClickListener(fragment, "report/syussya"));
                                       return view;
                                   }});
+        syussyaProgress = Option.fromNull((ProgressBar)view.findViewById(R.id.syussyaProgress));
+        taisyaProgress = Option.fromNull((ProgressBar)view.findViewById(R.id.taisyaProgress));
     }
 
     @Override
@@ -92,7 +99,7 @@ public class KintaiReportFragment extends Fragment implements ApiJsonOperationCa
         }
 
         @Override
-        public void onClick(View v) {
+        public void onClick(final View v) {
             final Option<KintaiReportFragment> fragment = Option.fromNull(parentFragment.get());
             fragment.foreach(new Effect<KintaiReportFragment>() {
                 @Override
@@ -110,7 +117,11 @@ public class KintaiReportFragment extends Fragment implements ApiJsonOperationCa
 
                             }
                         });
-                    f.startProgress();
+                    if (v.getId() == R.id.syussyaButton) {
+                        f.startProgress(Operation.Syussya);
+                    } else if (v.getId() == R.id.taisyaButton) {
+                        f.startProgress(Operation.Taisya);
+                    }
                     f.client.foreach(new Effect<MobileServiceClient>() {
                         @Override
                         public void e(MobileServiceClient client) {
@@ -169,88 +180,33 @@ public class KintaiReportFragment extends Fragment implements ApiJsonOperationCa
               });
     }
 
-    private void startProgress() {
-        mProgress = 0;
-        isProgressRunning = true;
-        Option.fromNull(getActivity())
-                .map(new F<Activity, Either<? extends Exception, ProgressActivity>>() {
-                    @Override
-                    public Either<? extends Exception, ProgressActivity> f(Activity activity) {
-                        Either<? extends Exception, ProgressActivity> eitherActivity;
-                        try {
-                            eitherActivity = Either.right((ProgressActivity) activity);
-                        } catch (ClassCastException e) {
-                            eitherActivity = Either.left(e);
-                        }
-                        return eitherActivity;
-                    }
-                })
-                .orSome(Either.<Exception, ProgressActivity>left(new Exception("Activity is null")))
-                .right()
-                .toOption()
-                .map(new F<ProgressActivity, Thread>() {
-                    @Override
-                    public Thread f(final ProgressActivity progressActivity) {
-                        progressActivity.setActivityProgressBarVisible(true);
-                        progressActivity.setActivityProgress(0);
-                        return new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                while (isProgressRunning) {
-                                    try {
-                                        Thread.sleep(300);
-                                    } catch (InterruptedException e) {
-                                        e.printStackTrace();
-                                    }
-                                    progressActivity.runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            mProgress += 5;
-                                            progressActivity.setActivityProgress(mProgress);
-                                            Log.d(getString(R.string.app_name), "Progress is " + mProgress);
-                                        }
-                                    });
-                                }
-                            }
-                        });
-                    }
-                })
-                    .foreach(new Effect<Thread>() {
-                        @Override
-                        public void e(Thread thread) {
-                            thread.start();
-                        }
-                    });
+    private void startProgress(Operation operation) {
+        final Option<ProgressBar> progress;
+        if (operation == Operation.Syussya) {
+            progress = syussyaProgress;
+        } else {
+            progress = taisyaProgress;
+        }
+        progress.foreach(new Effect<ProgressBar>() {
+            @Override
+            public void e(ProgressBar progressBar) {
+                progressBar.setVisibility(View.VISIBLE);
+            }
+        });
     }
 
     private void stopProgress() {
-        isProgressRunning = false;
-        mProgress = 0;
-        Option.fromNull(getActivity())
-                .map(new F<Activity, Either<? extends Exception, ProgressActivity>>() {
-                    @Override
-                    public Either<? extends Exception, ProgressActivity> f(Activity activity) {
-                        Either<? extends Exception, ProgressActivity> eitherActivity;
-                        try {
-                            eitherActivity = Either.right((ProgressActivity)activity);
-                        } catch (ClassCastException e) {
-                            eitherActivity = Either.left(e);
+        List.list(syussyaProgress, taisyaProgress)
+            .foreach(new Effect<Option<ProgressBar>>() {
+                @Override
+                public void e(Option<ProgressBar> progress) {
+                    progress.foreach(new Effect<ProgressBar>() {
+                        @Override
+                        public void e(ProgressBar progressBar) {
+                            progressBar.setVisibility(View.GONE);
                         }
-                        return eitherActivity;
-                    }})
-                .orSome(Either.<Exception, ProgressActivity>left(new Exception("Activity is null")))
-                .right()
-                .foreach(new Effect<ProgressActivity>() {
-                    @Override
-                    public void e(final ProgressActivity progressActivity) {
-                        progressActivity.setActivityProgress(100);
-                        new android.os.Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                progressActivity.setActivityProgressBarVisible(false);
-                            }
-                        }, 500);
-                    }
-                });
+                    });
+                }
+            });
     }
 }
