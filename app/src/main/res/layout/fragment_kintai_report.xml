@@ -1,4 +1,4 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/kintai_report_height"
@@ -6,26 +6,53 @@
     xmlns:android-bootstrap="http://schemas.android.com/apk/res-auto"
     tools:context="net.numa08.kintaicollection.app.KintaiReportFragment"
     android:gravity="center_vertical"
+    android:id="@+id/layoutFrame"
     >
 
+    <Space
+        android:id="@+id/center"
+        android:layout_width="8dp"
+        android:layout_height="8dp"
+        android:layout_centerInParent="true"
+        />
     <com.beardedhen.androidbootstrap.BootstrapButton
         android:id="@+id/syussyaButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
         android-bootstrap:bb_type="primary"
         android:text="@string/syussya"
         android:textSize="@dimen/text_medium"
         android:padding="@dimen/padding_common"
+        android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@id/center"
         />
     <com.beardedhen.androidbootstrap.BootstrapButton
         android:id="@+id/taisyaButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
         android-bootstrap:bb_type="danger"
         android:text="@string/taisya"
         android:textSize="@dimen/text_medium"
         android:padding="@dimen/padding_common"
+        android:layout_alignParentRight="true"
+        android:layout_toRightOf="@id/center"
         />
-</LinearLayout>
+    <ProgressBar
+        android:id="@+id/syussyaProgress"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_alignLeft="@id/syussyaButton"
+        android:layout_alignRight="@id/syussyaButton"
+        android:layout_alignTop="@id/syussyaButton"
+        android:layout_alignBottom="@+id/syussyaButton"
+        />
+    <ProgressBar
+        android:id="@+id/taisyaProgress"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_alignLeft="@id/taisyaButton"
+        android:layout_alignRight="@id/taisyaButton"
+        android:layout_alignTop="@id/taisyaButton"
+        android:layout_alignBottom="@id/taisyaButton"
+        />
+</RelativeLayout>
