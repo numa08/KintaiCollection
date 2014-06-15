@@ -150,7 +150,6 @@ public class KintaiListFragment extends ListFragment implements AbsListView.OnIt
         either.right().foreach(new Effect<JsonElement>() {
             @Override
             public void e(JsonElement jsonElement) {
-                Toast.makeText(getActivity(), "Get response OK", Toast.LENGTH_LONG).show();
                 Log.d(getString(R.string.app_name), jsonElement.toString());
             }});
         either.left()

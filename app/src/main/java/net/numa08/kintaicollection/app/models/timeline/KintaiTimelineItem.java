@@ -16,4 +16,5 @@ public class KintaiTimelineItem {
     public Kintai getKintai() {
         return kintai;
     }
+
 }

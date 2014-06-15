@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import net.numa08.kintaicollection.app.domein.RegisterUserData;
 import net.numa08.kintaicollection.app.views.ProgressActivity;
 
 
@@ -17,6 +18,10 @@ public class MainActivity extends ProgressActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        final RegisterUserData registerUserData = new RegisterUserData();
+        getFragmentManager().beginTransaction()
+                            .add(registerUserData, "registerUserData")
+                            .commit();
     }
 
 
