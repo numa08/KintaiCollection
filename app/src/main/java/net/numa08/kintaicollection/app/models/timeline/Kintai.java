@@ -15,6 +15,8 @@ public interface Kintai {
 
     public String toLogMessage(Context context);
 
+    public Status status();
+
     public enum Status {
         Syussya("ｼｭｯｼｬ"),
         Taisya("ﾀｲｼｬ");
@@ -42,6 +44,11 @@ public interface Kintai {
 
         public Date getDate() {
             return date;
+        }
+
+        @Override
+        public Status status() {
+            return Status.Syussya;
         }
 
         @Override
@@ -83,6 +90,11 @@ public interface Kintai {
 
         public Date getDate() {
             return date;
+        }
+
+        @Override
+        public Status status() {
+            return Status.Taisya;
         }
 
         @Override

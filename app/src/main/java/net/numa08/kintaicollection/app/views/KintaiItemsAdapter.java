@@ -3,6 +3,7 @@ package net.numa08.kintaicollection.app.views;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.LruCache;
+import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -13,9 +14,18 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
 
 import net.numa08.kintaicollection.app.R;
+import net.numa08.kintaicollection.app.models.timeline.Kintai;
 import net.numa08.kintaicollection.app.models.timeline.KintaiTimelineItem;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class KintaiItemsAdapter extends ArrayAdapter<KintaiTimelineItem>{
+
+    private static final Map<Kintai.Status, Integer> KINTAI_BACKGROUND = new HashMap<Kintai.Status, Integer>(){{
+        put(Kintai.Status.Syussya, R.color.syussya_background);
+        put(Kintai.Status.Taisya, R.color.taisya_background);
+    }};
 
     private final ImageLoader loader;
 
@@ -41,7 +51,8 @@ public class KintaiItemsAdapter extends ArrayAdapter<KintaiTimelineItem>{
         final KintaiTimelineItem item = getItem(position);
         holder.name.setText(item.getUser().name);
         holder.kintai.setText(item.getKintai().toLogMessage(getContext()));
-
+        final int color = getContext().getResources().getColor(KINTAI_BACKGROUND.get(item.getKintai().status()));
+        convertView.setBackgroundColor(color);
         final ImageLoader.ImageListener listener = ImageLoader.getImageListener(holder.icon, android.R.drawable.spinner_background, android.R.drawable.ic_dialog_alert);
         loader.get(item.getUser().icon, listener);
 
