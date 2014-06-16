@@ -35,3 +35,23 @@ dependencies {
     compile 'com.mcxiaoke.volley:library:1.0.+'
     compile 'org.hamcrest:hamcrest-all:1.3'
 }
+
+apply plugin: 'deploygate'
+
+deploygate {
+    userName = deploygateUserName
+    token = deploygateToken
+
+    apks {
+        release {
+            sourceFile = file("build/outputs/apk/app-release.apk")
+        }
+
+        debug {
+            sourceFile = file("build/outputs/apk/app-debug.apk")
+
+            //Below is optional
+            message = "git log --pretty=format:\"%s\" -1".execute().text
+        }
+    }
+}
