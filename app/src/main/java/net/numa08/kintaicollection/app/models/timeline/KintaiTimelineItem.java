@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.text.ParseException;
+import java.util.Comparator;
 import java.util.Date;
 
 public class KintaiTimelineItem {
@@ -66,4 +67,13 @@ public class KintaiTimelineItem {
         final KintaiTimelineItem item = new KintaiTimelineItem(user, kintai);
         return item;
     }
+
+    public static final Comparator<KintaiTimelineItem> COMPARATOR = new Comparator<KintaiTimelineItem>() {
+        @Override
+        public int compare(KintaiTimelineItem lhs, KintaiTimelineItem rhs) {
+            final Date lDate = lhs.getKintai().getDate();
+            final Date rDate = rhs.getKintai().getDate();
+            return -1 * lDate.compareTo(rDate);
+        }
+    };
 }

@@ -18,17 +18,24 @@ import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.microsoft.windowsazure.mobileservices.ApiJsonOperationCallback;
 import com.microsoft.windowsazure.mobileservices.MobileServiceClient;
 import com.microsoft.windowsazure.mobileservices.MobileServiceUser;
 import com.microsoft.windowsazure.mobileservices.ServiceFilterResponse;
 
+import net.numa08.kintaicollection.app.models.timeline.KintaiTimelineItem;
 import net.numa08.kintaicollection.app.views.KintaiItemsAdapter;
 
 import org.apache.http.client.methods.HttpGet;
+import org.json.JSONArray;
 
 import java.net.MalformedURLException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import fj.Effect;
 import fj.F;
@@ -147,19 +154,42 @@ public class KintaiListFragment extends ListFragment implements AbsListView.OnIt
         } else {
             either = Either.left(e);
         }
-        either.right().foreach(new Effect<JsonElement>() {
-            @Override
-            public void e(JsonElement jsonElement) {
-                Log.d(getString(R.string.app_name), jsonElement.toString());
-            }});
+        either.right()
+              .toOption()
+              .map(new F<JsonElement, List<KintaiTimelineItem>>() {
+
+                  @Override
+                  public List<KintaiTimelineItem> f(JsonElement jsonElement) {
+                      final JsonArray array = jsonElement.getAsJsonArray();
+                      final List<KintaiTimelineItem> items = new ArrayList<>(array.size());
+                      for (JsonElement elem : array) {
+                          try {
+                              final KintaiTimelineItem item = KintaiTimelineItem.parseJson(elem);
+                              items.add(item);
+                          } catch (ParseException e1) {
+                              e1.printStackTrace();
+                          }
+                      }
+                      Collections.sort(items, KintaiTimelineItem.COMPARATOR);
+                      return items;
+                  }
+              })
+            .foreach(new Effect<List<KintaiTimelineItem>>() {
+                @Override
+                public void e(List<KintaiTimelineItem> items) {
+                    final KintaiItemsAdapter adapter = (KintaiItemsAdapter) getListAdapter();
+                    adapter.addAll(items);
+                }
+            });
         either.left()
               .toOption()
               .map(new F<Exception, Activity>() {
-                    @Override
-                    public Activity f(Exception e) {
-                        Log.e(getString(R.string.app_name), "Failed Get", e);
-                        return getActivity();
-                    }})
+                  @Override
+                  public Activity f(Exception e) {
+                      Log.e(getString(R.string.app_name), "Failed Get", e);
+                      return getActivity();
+                  }
+              })
               .foreach(new Effect<Activity>() {
                   @Override
                   public void e(Activity activity) {
