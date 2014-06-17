@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
 import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
@@ -116,6 +117,18 @@ public class KintaiListFragment extends ListFragment implements AbsListView.OnIt
     }
 
     private void updateTimeline() {
+        Option.fromNull(getListAdapter())
+              .filter(new F<ListAdapter, Boolean>() {
+                  @Override
+                  public Boolean f(ListAdapter listAdapter) {
+                      return listAdapter.getCount() < 1;
+                  }})
+              .foreach(new Effect<ListAdapter>() {
+                  @Override
+                  public void e(ListAdapter listAdapter) {
+                      setListShown(false);
+                  }
+              });
         client.foreach(new Effect<MobileServiceClient>() {
             @Override
             public void e(MobileServiceClient client) {
@@ -179,6 +192,7 @@ public class KintaiListFragment extends ListFragment implements AbsListView.OnIt
                 public void e(List<KintaiTimelineItem> items) {
                     final KintaiItemsAdapter adapter = (KintaiItemsAdapter) getListAdapter();
                     adapter.addAll(items);
+                    setListShown(true);
                 }
             });
         either.left()
