@@ -9,7 +9,7 @@ android {
         targetSdkVersion 19
         versionCode 1
         versionName "1.0"
-        testPackageName "net.numa08.test.kintaicollection.api"
+        testApplicationId "net.numa08.test.kintaicollection.api"
         testInstrumentationRunner "android.test.InstrumentationTestRunner"
         testHandleProfiling true
         testFunctionalTest true
