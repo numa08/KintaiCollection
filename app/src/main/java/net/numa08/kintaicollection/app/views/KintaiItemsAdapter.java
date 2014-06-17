@@ -17,8 +17,12 @@ import net.numa08.kintaicollection.app.R;
 import net.numa08.kintaicollection.app.models.timeline.Kintai;
 import net.numa08.kintaicollection.app.models.timeline.KintaiTimelineItem;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class KintaiItemsAdapter extends ArrayAdapter<KintaiTimelineItem>{
 
@@ -28,6 +32,8 @@ public class KintaiItemsAdapter extends ArrayAdapter<KintaiTimelineItem>{
     }};
 
     private final ImageLoader loader;
+    private final Object lockObject = new Object();
+    private final Set<KintaiTimelineItem> itemSet = new TreeSet<>(KintaiTimelineItem.COMPARATOR);
 
     public KintaiItemsAdapter(Context context, RequestQueue queue) {
         super(context, 0);
@@ -57,6 +63,43 @@ public class KintaiItemsAdapter extends ArrayAdapter<KintaiTimelineItem>{
         loader.get(item.getUser().icon, listener);
 
         return convertView;
+    }
+
+    @Override
+    public void add(KintaiTimelineItem object) {
+        synchronized (lockObject) {
+            itemSet.add(object);
+            super.add(object);
+        }
+    }
+
+    @Override
+    public void addAll(KintaiTimelineItem... items) {
+        synchronized (lockObject) {
+            Collections.addAll(itemSet, items);
+            super.addAll(items);
+        }
+    }
+
+    @Override
+    public void insert(KintaiTimelineItem object, int index) {
+        throw new RuntimeException("insert is not allowed!!!");
+    }
+
+    @Override
+    public void addAll(Collection<? extends KintaiTimelineItem> collection) {
+        synchronized (lockObject) {
+            itemSet.addAll(collection);
+            super.addAll(itemSet);
+        }
+    }
+
+    @Override
+    public void clear() {
+        synchronized (lockObject) {
+            itemSet.clear();
+            super.clear();
+        }
     }
 
     private static class ViewHolder {
