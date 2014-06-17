@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.deploygate.sdk.DeployGate;
 import com.google.gson.JsonElement;
 import com.microsoft.windowsazure.mobileservices.ApiJsonOperationCallback;
 import com.microsoft.windowsazure.mobileservices.MobileServiceClient;
@@ -161,6 +162,7 @@ public class KintaiReportFragment extends Fragment implements ApiJsonOperationCa
               .foreach(new Effect<P2<JsonElement, Activity>>() {
                   @Override
                   public void e(P2<JsonElement, Activity> product) {
+                      DeployGate.logDebug("Completed Kintai Report");
                       Log.d(getString(R.string.app_name), product._2().toString());
                       final Intent intent = new Intent();
                       intent.setAction(MainActivity.Action.UPDATE_KINTAI_TIMELINE);
