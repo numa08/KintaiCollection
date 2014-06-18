@@ -13,6 +13,7 @@ import com.microsoft.windowsazure.mobileservices.ServiceFilterResponse;
 
 import net.numa08.kintaicollection.app.R;
 import net.numa08.kintaicollection.app.models.azure.MobileService;
+import net.numa08.kintaicollection.app.net.numa08.utils.FragmentUtils;
 
 import org.apache.http.client.methods.HttpPut;
 
@@ -53,6 +54,9 @@ public class RegisterUserData extends Fragment implements ApiJsonOperationCallba
 
     @Override
     public void onCompleted(JsonElement jsonElement, Exception e, ServiceFilterResponse serviceFilterResponse) {
+        if (!FragmentUtils.isActive(this)) {
+            return;
+        }
         if (e != null) {
             Log.e(getString(R.string.app_name), "user/register error", e);
         }

@@ -1,6 +1,7 @@
 package net.numa08.kintaicollection.app;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.app.ListFragment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -27,6 +28,7 @@ import com.microsoft.windowsazure.mobileservices.MobileServiceUser;
 import com.microsoft.windowsazure.mobileservices.ServiceFilterResponse;
 
 import net.numa08.kintaicollection.app.models.timeline.KintaiTimelineItem;
+import net.numa08.kintaicollection.app.net.numa08.utils.FragmentUtils;
 import net.numa08.kintaicollection.app.views.KintaiItemsAdapter;
 
 import org.apache.http.client.methods.HttpGet;
@@ -161,6 +163,9 @@ public class KintaiListFragment extends ListFragment implements AbsListView.OnIt
 
     @Override
     public void onCompleted(JsonElement jsonElement, Exception e, ServiceFilterResponse serviceFilterResponse) {
+        if (!FragmentUtils.isActive(this)) {
+            return;
+        }
         final Either<Exception, JsonElement> either;
         if (e == null) {
             either = Either.right(jsonElement);
