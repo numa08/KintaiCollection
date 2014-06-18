@@ -54,7 +54,6 @@ public class KintaiListFragment extends ListFragment implements AbsListView.OnIt
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
         final Either<Exception, MobileServiceClient> eitherClient = Option.fromNull(getActivity())
                        .map(new F<Activity, P2<Activity, MobileServiceUser>>() {
                            @Override
@@ -99,6 +98,7 @@ public class KintaiListFragment extends ListFragment implements AbsListView.OnIt
                                           @Override
                                           public void e(ArrayAdapter arrayAdapter) {
                                               setListAdapter(arrayAdapter);
+                                              setListShown(false);
                                           }
                                       });
     }
@@ -124,11 +124,6 @@ public class KintaiListFragment extends ListFragment implements AbsListView.OnIt
                   @Override
                   public Boolean f(ListAdapter listAdapter) {
                       return listAdapter.getCount() < 1;
-                  }})
-              .foreach(new Effect<ListAdapter>() {
-                  @Override
-                  public void e(ListAdapter listAdapter) {
-                      setListShown(false);
                   }
               });
         client.foreach(new Effect<MobileServiceClient>() {
