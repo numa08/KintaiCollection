@@ -7,7 +7,7 @@ import java.text.ParseException;
 import java.util.Comparator;
 import java.util.Date;
 
-public class KintaiTimelineItem {
+public class KintaiTimelineItem implements Comparable<KintaiTimelineItem>{
     private final User user;
     private final Kintai kintai;
 
@@ -22,6 +22,13 @@ public class KintaiTimelineItem {
 
     public Kintai getKintai() {
         return kintai;
+    }
+
+    @Override
+    public int compareTo(KintaiTimelineItem another) {
+        final Date lDate = this.getKintai().getDate();
+        final Date rDate = another.getKintai().getDate();
+        return -1 * lDate.compareTo(rDate);
     }
 
     @Override
