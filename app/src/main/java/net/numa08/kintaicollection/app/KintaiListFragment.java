@@ -191,6 +191,7 @@ public class KintaiListFragment extends ListFragment implements AbsListView.OnIt
                 @Override
                 public void e(List<KintaiTimelineItem> items) {
                     final KintaiItemsAdapter adapter = (KintaiItemsAdapter) getListAdapter();
+                    adapter.clear();
                     adapter.addAll(items);
                     setListShown(true);
                 }
