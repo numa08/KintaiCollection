@@ -77,8 +77,11 @@ public class KintaiItemsAdapter extends ArrayAdapter<KintaiTimelineItem>{
     @Override
     public void addAll(KintaiTimelineItem... items) {
         synchronized (lockObject) {
-            if (Collections.addAll(itemSet, items)) {
-                super.addAll(items);
+            final TreeSet<KintaiTimelineItem> newCollection = new TreeSet<>();
+            Collections.addAll(newCollection, items);
+            newCollection.removeAll(itemSet);
+            if (itemSet.addAll(newCollection)) {
+                super.addAll(newCollection);
             }
         }
     }
@@ -91,8 +94,10 @@ public class KintaiItemsAdapter extends ArrayAdapter<KintaiTimelineItem>{
     @Override
     public void addAll(Collection<? extends KintaiTimelineItem> collection) {
         synchronized (lockObject) {
-            if (itemSet.addAll(collection)) {
-                super.addAll(collection);
+            final TreeSet<KintaiTimelineItem> newCollection = new TreeSet<>(collection);
+            newCollection.removeAll(itemSet);
+            if (itemSet.addAll(newCollection)) {
+                super.addAll(newCollection);
             }
         }
     }

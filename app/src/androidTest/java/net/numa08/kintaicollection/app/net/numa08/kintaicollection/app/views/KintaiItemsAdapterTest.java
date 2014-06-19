@@ -12,6 +12,7 @@ import net.numa08.kintaicollection.app.views.KintaiItemsAdapter;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -41,9 +42,9 @@ public class KintaiItemsAdapterTest extends AndroidTestCase {
 
     public void testAddObjectArray() throws Exception {
         final List<KintaiTimelineItem> items = Arrays.asList(
-                new KintaiTimelineItem(new User("name", "id", "http://www.broccoli.co.jp/dejiko/15th/img/dejiko01.png"), new Kintai.Syussya(new Date())),
-                new KintaiTimelineItem(new User("name", "id", "http://www.broccoli.co.jp/dejiko/15th/img/dejiko01.png"), new Kintai.Syussya(new Date())),
-                new KintaiTimelineItem(new User("name", "id", "http://www.broccoli.co.jp/dejiko/15th/img/dejiko01.png"), new Kintai.Syussya(new Date()))
+                new KintaiTimelineItem(new User("name", "id", "http://www.broccoli.co.jp/dejiko/15th/img/dejiko01.png"), new Kintai.Syussya(new Date(0))),
+                new KintaiTimelineItem(new User("name", "id", "http://www.broccoli.co.jp/dejiko/15th/img/dejiko01.png"), new Kintai.Syussya(new Date(1))),
+                new KintaiTimelineItem(new User("name", "id", "http://www.broccoli.co.jp/dejiko/15th/img/dejiko01.png"), new Kintai.Syussya(new Date(2)))
         );
         mAdapter.addAll(items);
         assertThat(mAdapter.getCount(), is(3));
@@ -51,12 +52,38 @@ public class KintaiItemsAdapterTest extends AndroidTestCase {
 
     public void testaddSameObjectArray() throws Exception {
         final List<KintaiTimelineItem> items = Arrays.asList(
-                new KintaiTimelineItem(new User("name", "id", "http://www.broccoli.co.jp/dejiko/15th/img/dejiko01.png"), new Kintai.Syussya(new Date())),
-                new KintaiTimelineItem(new User("name", "id", "http://www.broccoli.co.jp/dejiko/15th/img/dejiko01.png"), new Kintai.Syussya(new Date())),
-                new KintaiTimelineItem(new User("name", "id", "http://www.broccoli.co.jp/dejiko/15th/img/dejiko01.png"), new Kintai.Syussya(new Date()))
+                new KintaiTimelineItem(new User("name", "id", "http://www.broccoli.co.jp/dejiko/15th/img/dejiko01.png"), new Kintai.Syussya(new Date(0))),
+                new KintaiTimelineItem(new User("name", "id", "http://www.broccoli.co.jp/dejiko/15th/img/dejiko01.png"), new Kintai.Syussya(new Date(1))),
+                new KintaiTimelineItem(new User("name", "id", "http://www.broccoli.co.jp/dejiko/15th/img/dejiko01.png"), new Kintai.Syussya(new Date(2)))
         );
         mAdapter.addAll(items);
         mAdapter.addAll(items);
         assertThat(mAdapter.getCount(), is(3));
+    }
+
+    public void testAddNewItem() throws Exception {
+        final List<KintaiTimelineItem> items = Arrays.asList(
+                new KintaiTimelineItem(new User("name", "id", "http://www.broccoli.co.jp/dejiko/15th/img/dejiko01.png"), new Kintai.Syussya(new Date(0))),
+                new KintaiTimelineItem(new User("name", "id", "http://www.broccoli.co.jp/dejiko/15th/img/dejiko01.png"), new Kintai.Syussya(new Date(1))),
+                new KintaiTimelineItem(new User("name", "id", "http://www.broccoli.co.jp/dejiko/15th/img/dejiko01.png"), new Kintai.Syussya(new Date(2)))
+        );
+        mAdapter.addAll(items);
+        final KintaiTimelineItem item = new KintaiTimelineItem(new User("name", "id", "http://www.broccoli.co.jp/dejiko/15th/img/dejiko01.png"), new Kintai.Syussya(new Date(3)));
+        mAdapter.add(item);
+        assertThat(mAdapter.getCount(), is(4));
+    }
+
+    public void testAddNewItemOfArray() throws Exception {
+        final List<KintaiTimelineItem> items = Arrays.asList(
+                new KintaiTimelineItem(new User("name", "id", "http://www.broccoli.co.jp/dejiko/15th/img/dejiko01.png"), new Kintai.Syussya(new Date(0))),
+                new KintaiTimelineItem(new User("name", "id", "http://www.broccoli.co.jp/dejiko/15th/img/dejiko01.png"), new Kintai.Syussya(new Date(1))),
+                new KintaiTimelineItem(new User("name", "id", "http://www.broccoli.co.jp/dejiko/15th/img/dejiko01.png"), new Kintai.Syussya(new Date(2)))
+        );
+        mAdapter.addAll(items);
+        final List<KintaiTimelineItem> newItems = new ArrayList<>(items);
+        newItems.add(new KintaiTimelineItem(new User("name", "id", "http://www.broccoli.co.jp/dejiko/15th/img/dejiko01.png"), new Kintai.Syussya(new Date(3))));
+        mAdapter.addAll(newItems);
+        assertThat(mAdapter.getCount(), is(4));
+
     }
 }
