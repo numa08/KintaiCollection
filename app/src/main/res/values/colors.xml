@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="syussya_background">#EF99CFE5</color>
-    <color name="taisya_background">#EFF3C0AB</color>
+    <color name="syussya_background">#D9EDF7</color>
+    <color name="taisya_background">#F0D6D6</color>
     <color name="report_background">#ffffff</color>
 </resources>
