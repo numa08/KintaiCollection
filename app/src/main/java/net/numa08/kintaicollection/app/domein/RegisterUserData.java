@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.deploygate.sdk.DeployGate;
 import com.google.gson.JsonElement;
 import com.microsoft.windowsazure.mobileservices.ApiJsonOperationCallback;
 import com.microsoft.windowsazure.mobileservices.MobileServiceClient;
@@ -15,14 +16,16 @@ import net.numa08.kintaicollection.app.R;
 import net.numa08.kintaicollection.app.models.azure.MobileService;
 import net.numa08.kintaicollection.app.net.numa08.utils.FragmentUtils;
 
+import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpPut;
 
 import fj.Effect;
 import fj.F;
 import fj.P2;
+import fj.data.Either;
 import fj.data.Option;
 
-public class RegisterUserData extends Fragment implements ApiJsonOperationCallback{
+public class RegisterUserData extends Fragment {
 
     Option<MobileServiceClient> client = Option.none();
 
@@ -42,23 +45,73 @@ public class RegisterUserData extends Fragment implements ApiJsonOperationCallba
                                 return product._1();
                             }
                         });
+
         client.foreach(new Effect<MobileServiceClient>() {
             @Override
             public void e(MobileServiceClient client) {
-                Log.d(getString(R.string.app_name), "invoke user/register");
-                client.invokeApi("user/register", HttpPut.METHOD_NAME, null, RegisterUserData.this);
+                Log.d(getString(R.string.app_name), "invoke user/me");
+                client.invokeApi("user/me", HttpPut.METHOD_NAME, null, RegisterUserData.this.onRequestMeInfoCallback);
             }
         });
 
     }
 
-    @Override
-    public void onCompleted(JsonElement jsonElement, Exception e, ServiceFilterResponse serviceFilterResponse) {
-        if (!FragmentUtils.isActive(this)) {
-            return;
+    private final ApiJsonOperationCallback onRequestMeInfoCallback = new ApiJsonOperationCallback() {
+        @Override
+        public void onCompleted(JsonElement jsonElement, Exception e, ServiceFilterResponse serviceFilterResponse) {
+            if (!FragmentUtils.isActive(RegisterUserData.this)) {
+                return;
+            }
+
+            final Either<Exception, ServiceFilterResponse> eitherResponse;
+            if (e == null ) {
+                eitherResponse = Either.right(serviceFilterResponse);
+            } else {
+                eitherResponse = Either.left(e);
+            }
+
+            eitherResponse.left()
+                          .toOption()
+                          .foreach(new Effect<Exception>() {
+                              @Override
+                              public void e(Exception e) {
+                                  Log.e(getString(R.string.app_name), "user/me error", e);
+                                  DeployGate.logError(e.getMessage());
+                              }
+                          });
+            eitherResponse.right()
+                          .toOption()
+                          .filter(new F<ServiceFilterResponse, Boolean>() {
+                              @Override
+                              public Boolean f(ServiceFilterResponse serviceFilterResponse) {
+                                  return serviceFilterResponse.getStatus().getStatusCode() == HttpStatus.SC_ACCEPTED;
+                              }})
+                          .foreach(new Effect<ServiceFilterResponse>() {
+                              @Override
+                              public void e(ServiceFilterResponse serviceFilterResponse) {
+                                  client.foreach(new Effect<MobileServiceClient>() {
+                                      @Override
+                                      public void e(MobileServiceClient client) {
+                                          Log.d(getString(R.string.app_name), "invoke user/register");
+                                          client.invokeApi("user/register", HttpPut.METHOD_NAME, null, RegisterUserData.this.onRegisterMyInfoCallback);
+                                      }
+                                  });
+                              }
+                          });
         }
-        if (e != null) {
-            Log.e(getString(R.string.app_name), "user/register error", e);
+    };
+
+    private final ApiJsonOperationCallback onRegisterMyInfoCallback = new ApiJsonOperationCallback() {
+        @Override
+        public void onCompleted(JsonElement jsonElement, Exception e, ServiceFilterResponse serviceFilterResponse) {
+            if (!FragmentUtils.isActive(RegisterUserData.this)) {
+                return;
+            }
+            if (e != null) {
+                Log.e(getString(R.string.app_name), "user/register error", e);
+            } else {
+                Log.d(getString(R.string.app_name), "user/register ok");
+            }
         }
-    }
+    };
 }
