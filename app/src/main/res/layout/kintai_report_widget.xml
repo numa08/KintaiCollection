@@ -1,21 +1,26 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="@dimen/widget_margin"
-    android:background="#09C" >
+    android:orientation="horizontal"
+    >
 
-    <TextView
-        android:id="@+id/appwidget_text"
-        android:layout_width="wrap_content"
+    <Button
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:text="@string/appwidget_text"
-        android:textColor="#ffffff"
-        android:textSize="24sp"
-        android:textStyle="bold|italic"
-        android:layout_margin="8dp"
-        android:contentDescription="@string/appwidget_text"
-        android:background="#09C"/>
-
-</RelativeLayout>
+        android:layout_weight="1"
+        android:text="@string/syussya"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/text_medium"
+        android:background="@color/bbutton_primary"
+        />
+    <Button
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="@string/taisya"
+        android:textSize="@dimen/text_medium"
+        android:textColor="@android:color/white"
+        android:background="@color/bbutton_danger"
+        />
+</LinearLayout>
