@@ -13,21 +13,29 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
-            android:screenOrientation="portrait"
-            >
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name=".AuthenticateActivity"
             android:label="@string/app_name"
             android:noHistory="true"
-            android:screenOrientation="portrait"
-            >
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <receiver android:name=".KintaiReportWidget" >
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/kintai_report_widget_info" />
+        </receiver>
     </application>
 
 </manifest>

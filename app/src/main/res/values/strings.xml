@@ -10,5 +10,7 @@
     <string name="title_activity_authoricate">AuthoricateActivity</string>
     <string name="signinWithTwitter">Singin in with Twitter</string>
     <string name="msg_login_failed">ログインに失敗しました</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
 
 </resources>
