@@ -36,6 +36,11 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/kintai_report_widget_info" />
         </receiver>
+
+        <service
+            android:name=".KintaiReportWidgetService"
+            android:exported="false" >
+        </service>
     </application>
 
 </manifest>

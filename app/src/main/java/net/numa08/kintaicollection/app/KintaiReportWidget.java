@@ -1,45 +1,45 @@
 package net.numa08.kintaicollection.app;
 
+import android.app.PendingIntent;
+import android.app.Service;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
+import android.content.Intent;
+import android.os.IBinder;
+import android.util.Log;
 import android.widget.RemoteViews;
 
 
-/**
- * Implementation of App Widget functionality.
- */
 public class KintaiReportWidget extends AppWidgetProvider {
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-        // There may be multiple widgets active, so update all of them
         final int N = appWidgetIds.length;
         for (int i=0; i<N; i++) {
             updateAppWidget(context, appWidgetManager, appWidgetIds[i]);
         }
     }
 
-
-    @Override
-    public void onEnabled(Context context) {
-        // Enter relevant functionality for when the first widget is created
-    }
-
-    @Override
-    public void onDisabled(Context context) {
-        // Enter relevant functionality for when the last widget is disabled
-    }
-
-    static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
+    private void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
             int appWidgetId) {
 
-        CharSequence widgetText = context.getString(R.string.appwidget_text);
-        // Construct the RemoteViews object
-        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.kintai_report_widget);
-
-        // Instruct the widget manager to update the widget
+        final RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.kintai_report_widget);
+        views.setOnClickPendingIntent(R.id.syussyaButton, createSyussyaService(context, appWidgetId));
+        views.setOnClickPendingIntent(R.id.taisyaButton, createTaisyaService(context, appWidgetId));
         appWidgetManager.updateAppWidget(appWidgetId, views);
+    }
+
+    private PendingIntent createSyussyaService(Context context, int appWidgetId) {
+        final Intent intent = new Intent(context, KintaiReportWidgetService.class);
+        intent.setAction(KintaiReportWidgetService.Action.SYUSSYA);
+        return PendingIntent.getService(context, appWidgetId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
+    private PendingIntent createTaisyaService(Context context, int appWidgetId) {
+        final Intent intent = new Intent(context, KintaiReportWidgetService.class);
+        intent.setAction(KintaiReportWidgetService.Action.TAISYA);
+        return PendingIntent.getService(context, appWidgetId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 }
 
