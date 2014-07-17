@@ -1,0 +1,28 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/widget_margin"
+    android:orientation="horizontal"
+    >
+
+    <Button
+        android:id="@+id/syussyaButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="@string/syussya"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/text_medium"
+        android:background="@drawable/bbuton_primary_rounded"
+        />
+    <Button
+        android:id="@+id/taisyaButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="@string/taisya"
+        android:textSize="@dimen/text_medium"
+        android:textColor="@android:color/white"
+        android:background="@drawable/bbuton_danger_rounded"
+        />
+</LinearLayout>
